@@ -25,6 +25,7 @@
                 <th>Total Cancelled</th>
                 <th>Conversion Rate</th>
                 <th>Not Qualifies Rate</th>
+                <th>Cancelled Rate</th>
             </tr>
             {% for salesperson, summary in summary_data.items() %}
                 <tr>
@@ -36,6 +37,8 @@
                     <td>{% if 'Total Cancelled' in summary %}{{ summary['Total Cancelled'] }}{% else %}0{% endif %}</td>
                     <td>{{ summary['Conversion Rate'] }}</td>
                     <td>{{ summary['Not Qualifies Rate'] }}</td>
+                    <td>{{ summary['Cancelled Rate'] }}</td>
+
                 </tr>
             {% endfor %}
         </table>

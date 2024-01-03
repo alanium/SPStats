@@ -107,6 +107,9 @@ def calculate_stats():
         conversion_rate = total_qualifies / (total_qualifies + total_not_qualifies) if total_qualifies + total_not_qualifies > 0 else 0
         not_qualifies_rate = 1 - conversion_rate
 
+        cancelled_rate = total_cancelled / total_not_qualifies if not_qualifies > 0 else 0
+
+
         result_dict[key] = {
             'total_qualifies': total_qualifies,
             'total_not_qualifies': total_not_qualifies,
@@ -114,7 +117,8 @@ def calculate_stats():
             'month_goal': month_goal,
             'month_goal_qualifies_amount': month_goal_qualifies_amount,
             'conversion_rate': conversion_rate,
-            'not_qualifies_rate': not_qualifies_rate
+            'not_qualifies_rate': not_qualifies_rate,
+            'cancelled_rate':cancelled_rate
         }
 
     return result_dict
@@ -229,6 +233,7 @@ def get_stats():
         total_cancelled = stats['total_cancelled']
         conversion_rate = stats['conversion_rate']
         not_qualifies_rate = stats['not_qualifies_rate']
+        cancelled_rate = stats['cancelled_rate']
 
         summary_data[salesperson] = {
             'Month Goal': month_goal,
@@ -237,7 +242,8 @@ def get_stats():
             'Total Not Qualifies': total_not_qualifies,
             'Total Cancelled': total_cancelled,
             'Conversion Rate': f"{conversion_rate:.2%}",
-            'Not Qualifies Rate': f"{not_qualifies_rate:.2%}"
+            'Not Qualifies Rate': f"{not_qualifies_rate:.2%}",
+            'Cancelled Rate': f"{cancelled_rate:.2%}"
         }
 
     return render_template('index.html', img_base64=img_base64, summary_data=summary_data)
