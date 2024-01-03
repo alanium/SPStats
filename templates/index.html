@@ -19,6 +19,8 @@
                 <th>Month Goal Qualifies Amount</th>
                 <th>Total Qualifies</th>
                 <th>Total Not Qualifies</th>
+                <th>Conversion Rate</th>
+                <th>Not Qualifies Rate</th>
             </tr>
             {% for salesperson, summary in summary_data.items() %}
                 <tr>
@@ -27,6 +29,8 @@
                     <td>{{ summary['Month Goal Qualifies Amount'] }}</td>
                     <td>{{ summary['Total Qualifies'] }}</td>
                     <td>{{ summary['Total Not Qualifies'] }}</td>
+                    <td>{{ summary['Conversion Rate'] }}</td>
+                    <td>{{ summary['Not Qualifies Rate'] }}</td>
                 </tr>
             {% endfor %}
         </table>

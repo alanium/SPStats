@@ -80,7 +80,9 @@ def count_tags_by_month():
 def calculate_stats():
     result_dict = {}
 
-    counts_by_month = count_tags_by_month()
+    #counts_by_month = count_tags_by_month()
+    counts_by_month = {'MARK': {'QUALIFIED': {'2024-01': 1, '2023-12': 22, '2023-08': 34, '2023-11': 12, '2023-09': 27, '2023-10': 19, '2023-07': 2}, 'NOT QUALIFIED': {'2023-12': 3, '2023-11': 1, '2023-10': 6, '2023-08': 5, '2023-09': 9}}, 'EDUARDO': {'QUALIFIED': {'2023-12': 4, '2023-11': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-12': 8, '2023-11': 4}}, 'MORGAN WEST': {'QUALIFIED': {'2023-11': 9, '2023-09': 20, '2023-12': 7, '2023-08': 11, '2023-10': 6}, 'NOT QUALIFIED': {'2023-12': 10, '2023-08': 3, '2023-09': 4, '2023-11': 1, '2023-10': 5}}, 'MORGAN': {'QUALIFIED': {'2023-08': 8, '2023-05': 12, '2023-07': 21, '2023-06': 12}, 'NOT QUALIFIED': {'2023-05': 7, '2023-07': 5, '2023-06': 3, '2023-08': 2}}, 'JONAS': {'QUALIFIED': {'2023-05': 1, '2023-06': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-05': 3, '2023-06': 4}}, 'ALISON': {'QUALIFIED': {'2023-11': 6, '2023-12': 8, '2023-10': 4}, 'NOT QUALIFIED': {'2023-11': 5, '2023-12': 3, '2023-10': 2}}, 'DYLAN': {'QUALIFIED': {'2023-08': 
+18, '2023-07': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-08': 4}}, 'JAY': {'QUALIFIED': {'2023-07': 9, '2023-09': 9, '2023-08': 1, '2023-06': 3}, 'NOT QUALIFIED': {'2023-07': 5, '2023-10': 1, '2023-08': 1, '2023-06': 3, '2023-09': 1}}, 'unknown': {'QUALIFIED': {'2023-12': 1}, 'NOT QUALIFIED': {}}}
 
     for key, counts in counts_by_month.items():
         total_qualifies = sum(counts['QUALIFIED'].values())
@@ -90,11 +92,17 @@ def calculate_stats():
         month_goal = max(counts['QUALIFIED'], key=counts['QUALIFIED'].get, default=None)
         month_goal_qualifies_amount = counts['QUALIFIED'].get(month_goal, 0)
 
+        # Calcular los ratios de conversión
+        conversion_rate = total_qualifies / (total_qualifies + total_not_qualifies) if total_qualifies + total_not_qualifies > 0 else 0
+        not_qualifies_rate = 1 - conversion_rate
+
         result_dict[key] = {
             'total_qualifies': total_qualifies,
             'total_not_qualifies': total_not_qualifies,
             'month_goal': month_goal,
-            'month_goal_qualifies_amount': month_goal_qualifies_amount
+            'month_goal_qualifies_amount': month_goal_qualifies_amount,
+            'conversion_rate': conversion_rate,
+            'not_qualifies_rate': not_qualifies_rate
         }
 
     return result_dict
@@ -108,13 +116,9 @@ def extract_id_from_read_item(id):
     else:
         return None
 
-test = {'MARK': {'total_qualifies': 117, 'total_not_qualifies': 24, 'month_goal': '2023-08', 'month_goal_qualifies_amount': 34}, 'EDUARDO': {'total_qualifies': 7, 'total_not_qualifies': 12, 'month_goal': '2023-12', 'month_goal_qualifies_amount': 4}, 'MORGAN WEST': {'total_qualifies': 53, 'total_not_qualifies': 23, 'month_goal': '2023-09', 'month_goal_qualifies_amount': 20}, 'MORGAN': {'total_qualifies': 53, 'total_not_qualifies': 17, 'month_goal': '2023-07', 'month_goal_qualifies_amount': 21}, 'JONAS': {'total_qualifies': 4, 'total_not_qualifies': 7, 'month_goal': '2023-06', 'month_goal_qualifies_amount': 2}, 'ALISON': {'total_qualifies': 18, 'total_not_qualifies': 10, 'month_goal': '2023-12', 'month_goal_qualifies_amount': 8}, 'DYLAN': {'total_qualifies': 21, 'total_not_qualifies': 4, 'month_goal': '2023-08', 'month_goal_qualifies_amount': 18}, 'JAY': {'total_qualifies': 22, 'total_not_qualifies': 11, 'month_goal': '2023-07', 'month_goal_qualifies_amount': 9}, 'unknown': {'total_qualifies': 1, 'total_not_qualifies': 0, 'month_goal': '2023-12', 'month_goal_qualifies_amount': 1}}
-
-#todo: usar test para motivos de testing en lugar de usar alculate_stats
-
 @app.route('/')
 def index():
-    stats_data = test
+    stats_data = calculate_stats()
 
     # Crear gráfico de barras
     plt.figure(figsize=(12, 6))
@@ -156,12 +160,16 @@ def index():
         month_goal_qualifies_amount = stats['month_goal_qualifies_amount']
         total_qualifies = stats['total_qualifies']
         total_not_qualifies = stats['total_not_qualifies']
+        conversion_rate = stats['conversion_rate']
+        not_qualifies_rate = stats['not_qualifies_rate']
 
         summary_data[salesperson] = {
             'Month Goal': month_goal,
             'Month Goal Qualifies Amount': month_goal_qualifies_amount,
             'Total Qualifies': total_qualifies,
-            'Total Not Qualifies': total_not_qualifies
+            'Total Not Qualifies': total_not_qualifies,
+            'Conversion Rate': f"{conversion_rate:.2%}",
+            'Not Qualifies Rate': f"{not_qualifies_rate:.2%}"
         }
 
     return render_template('index.html', img_base64=img_base64, summary_data=summary_data)
