@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect,url_for
 import json
 from collections import defaultdict
 from datetime import datetime
@@ -29,6 +29,7 @@ sales_persons = {
     "20bf548a-e262-4313-9c19-c547d83f7fb3": "MORGAN",
     "a61f6179-b49e-4d07-a5ca-59a482b1e8cb": "MILAGROS"
 }
+
 
 # Controlador
 
@@ -116,6 +117,61 @@ def extract_id_from_read_item(id):
     else:
         return None
 
+def filter_stats_by_month(stats_data, selected_month):
+    filtered_stats_data = {}
+    for salesperson, stats in stats_data.items():
+        month_goal = stats['month_goal']
+        month_goal_qualifies_amount = stats['month_goal_qualifies_amount']
+        total_qualifies = stats['total_qualifies']
+        total_not_qualifies = stats['total_not_qualifies']
+        conversion_rate = stats['conversion_rate']
+        not_qualifies_rate = stats['not_qualifies_rate']
+
+        if month_goal and month_goal.startswith(selected_month):
+            filtered_stats_data[salesperson] = {
+                'Month Goal': month_goal,
+                'Month Goal Qualifies Amount': month_goal_qualifies_amount,
+                'Total Qualifies': total_qualifies,
+                'Total Not Qualifies': total_not_qualifies,
+                'Conversion Rate': f"{conversion_rate:.2%}",
+                'Not Qualifies Rate': f"{not_qualifies_rate:.2%}"
+            }
+
+    return filtered_stats_data
+
+def filter_stats_by_range(stats_data, start_year, start_month, end_year, end_month):
+    filtered_stats_data = {}
+    for salesperson, stats in stats_data.items():
+        month_goal = stats['month_goal']
+        month_goal_qualifies_amount = stats['month_goal_qualifies_amount']
+        total_qualifies = stats['total_qualifies']
+        total_not_qualifies = stats['total_not_qualifies']
+        conversion_rate = stats['conversion_rate']
+        not_qualifies_rate = stats['not_qualifies_rate']
+
+        if month_goal:
+            goal_year, goal_month = map(int, month_goal.split('-'))
+
+            # Adaptar el formato de mes y año a 'YYYY/MM'
+            formatted_goal_month = f"{goal_year}/{goal_month:02d}"
+
+            formatted_start_month = f"{start_year}/{start_month:02d}"
+            formatted_end_month = f"{end_year}/{end_month:02d}"
+
+            if formatted_start_month <= formatted_goal_month <= formatted_end_month:
+                filtered_stats_data[salesperson] = {
+                    'Month Goal': month_goal,
+                    'Month Goal Qualifies Amount': month_goal_qualifies_amount,
+                    'Total Qualifies': total_qualifies,
+                    'Total Not Qualifies': total_not_qualifies,
+                    'Conversion Rate': f"{conversion_rate:.2%}",
+                    'Not Qualifies Rate': f"{not_qualifies_rate:.2%}"
+                }
+
+    return filtered_stats_data
+
+# Routes
+    
 @app.route('/')
 def index():
     stats_data = calculate_stats()
@@ -174,6 +230,45 @@ def index():
 
     return render_template('index.html', img_base64=img_base64, summary_data=summary_data)
 
+@app.route('/select_month', methods=['GET', 'POST'])
+def select_month():
+    if request.method == 'POST':
+        selected_year = request.form['year']
+        selected_month = request.form['month']
+        selected_month_year = f"{selected_year}-{selected_month}"
+        return redirect(url_for('show_selected_month', selected_month=selected_month_year))
+    return render_template('select_month.html')
+
+@app.route('/show_selected_month/<selected_month>')
+def show_selected_month(selected_month):
+    stats_data = calculate_stats()
+    filtered_stats_data = filter_stats_by_month(stats_data, selected_month)
+
+    return render_template('selected_month.html', selected_month=selected_month, filtered_stats_data=filtered_stats_data)
+
+#--
+
+@app.route('/select_range', methods=['GET', 'POST'])
+def select_range():
+    if request.method == 'POST':
+        start_year = request.form['start_year']
+        start_month = request.form['start_month']
+        end_year = request.form['end_year']
+        end_month = request.form['end_month']
+
+        return redirect(f'/show_selected_range/{start_year}/{start_month}-{end_year}/{end_month}')
+
+    return render_template('select_range.html')
+
+@app.route('/show_selected_range/<int:selected_year_first>/<int:selected_month_first>-<int:selected_year_second>/<int:selected_month_second>')
+def show_selected_range(selected_year_first, selected_month_first, selected_year_second, selected_month_second):
+    stats_data = calculate_stats()
+
+    filtered_stats_data = filter_stats_by_range(stats_data, selected_year_first, selected_month_first, selected_year_second, selected_month_second)
+
+    selected_range = f"{selected_year_first}/{selected_month_first}-to-{selected_year_second}/{selected_month_second}"
+
+    return render_template('show_selected_range.html', selected_range=selected_range, filtered_stats_data=filtered_stats_data)
 
 
 if __name__ == '__main__':

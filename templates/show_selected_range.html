@@ -1,0 +1,40 @@
+<!-- show_selected_range.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Show Selected Range</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Show Selected Range</h2>
+        <p>Selected Range: {{ selected_range }}</p>
+
+        <h3>Salesperson Summary</h3>
+        <table>
+            <tr>
+                <th>Salesperson</th>
+                <th>Month Goal</th>
+                <th>Month Goal Qualifies Amount</th>
+                <th>Total Qualifies</th>
+                <th>Total Not Qualifies</th>
+                <th>Conversion Rate</th>
+                <th>Not Qualifies Rate</th>
+            </tr>
+            {% for salesperson, stats in filtered_stats_data.items() %}
+                <tr>
+                    <td>{{ salesperson }}</td>
+                    <td>{{ stats['Month Goal'] }}</td>
+                    <td>{{ stats['Month Goal Qualifies Amount'] }}</td>
+                    <td>{{ stats['Total Qualifies'] }}</td>
+                    <td>{{ stats['Total Not Qualifies'] }}</td>
+                    <td>{{ stats['Conversion Rate'] }}</td>
+                    <td>{{ stats['Not Qualifies Rate'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
