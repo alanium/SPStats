@@ -170,10 +170,15 @@ def filter_stats_by_range(stats_data, start_year, start_month, end_year, end_mon
 
     return filtered_stats_data
 
+
 # Routes
-    
+
 @app.route('/')
-def index():
+def main_menu():
+    return render_template('main_menu.html')
+
+@app.route('/get_stats')
+def get_stats():
     stats_data = calculate_stats()
 
     # Crear gráfico de barras
@@ -246,8 +251,6 @@ def show_selected_month(selected_month):
 
     return render_template('selected_month.html', selected_month=selected_month, filtered_stats_data=filtered_stats_data)
 
-#--
-
 @app.route('/select_range', methods=['GET', 'POST'])
 def select_range():
     if request.method == 'POST':
@@ -263,11 +266,8 @@ def select_range():
 @app.route('/show_selected_range/<int:selected_year_first>/<int:selected_month_first>-<int:selected_year_second>/<int:selected_month_second>')
 def show_selected_range(selected_year_first, selected_month_first, selected_year_second, selected_month_second):
     stats_data = calculate_stats()
-
     filtered_stats_data = filter_stats_by_range(stats_data, selected_year_first, selected_month_first, selected_year_second, selected_month_second)
-
     selected_range = f"{selected_year_first}/{selected_month_first}-to-{selected_year_second}/{selected_month_second}"
-
     return render_template('show_selected_range.html', selected_range=selected_range, filtered_stats_data=filtered_stats_data)
 
 
