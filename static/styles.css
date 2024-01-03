@@ -40,6 +40,7 @@ tr:hover {
 }
 
 .container {
+    min-width: 300px;
     max-width: 800px;
     padding: 20px;
     background-color: #fff;
@@ -71,4 +72,16 @@ tr:hover {
     border-radius: 5px;
     cursor: pointer;
     margin-bottom: 10px;
+}
+.menu-button:hover {
+    background-color: #0056b3;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
