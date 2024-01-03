@@ -9,7 +9,11 @@
 </head>
 <body>
     <div class="container">
+        <form method="GET" action="{{ url_for('main_menu') }}">
+            <button type="submit">Back</button>
+        </form>
         <h2>Show Selected Range</h2>
+        
         <p>Selected Range: {{ selected_range }}</p>
 
         <h3>Salesperson Summary</h3>

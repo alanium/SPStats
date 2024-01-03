@@ -8,6 +8,9 @@
 </head>
 <body>
     <div class="container">
+        <form method="GET" action="{{ url_for('main_menu') }}">
+            <button type="submit">Back</button>
+        </form>
         <h2>Stats</h2>
         <img src="{{ img_base64 }}" alt="Qualified and Not Qualified">
 

@@ -9,7 +9,11 @@
 </head>
 <body>
     <div class="container">
+        <form method="GET" action="{{ url_for('main_menu') }}">
+            <button type="submit">Back</button>
+        </form>
         <h2>Select Month</h2>
+        
         <form method="post" action="{{ url_for('select_month') }}">
             <label for="year">Select Year:</label>
             <select name="year" id="year" required>
@@ -27,6 +31,8 @@
         
             <button type="submit">Submit</button>
         </form>
+        
+        
         
         
         
