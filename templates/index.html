@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Stats Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Stats</h2>
+        <img src="{{ img_base64 }}" alt="Qualified and Not Qualified">
+
+        <h2>Salesperson Summary</h2>
+        <table>
+            <tr>
+                <th>Salesperson</th>
+                <th>Month Goal</th>
+                <th>Month Goal Qualifies Amount</th>
+                <th>Total Qualifies</th>
+                <th>Total Not Qualifies</th>
+            </tr>
+            {% for salesperson, summary in summary_data.items() %}
+                <tr>
+                    <td>{{ salesperson }}</td>
+                    <td>{{ summary['Month Goal'] }}</td>
+                    <td>{{ summary['Month Goal Qualifies Amount'] }}</td>
+                    <td>{{ summary['Total Qualifies'] }}</td>
+                    <td>{{ summary['Total Not Qualifies'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
