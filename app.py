@@ -17,7 +17,6 @@ with open('config.json', 'r') as config_file:
 # Constantes
 SP = constants['SP']
 
-# salesPersons with name
 sales_persons = {
     "4c260962-bd4b-47d9-a300-5f3ceb378a6e": "MORGAN WEST",
     "a723c745-89f6-4b1f-b5f7-2a0a2f90b347": "MARK",
@@ -32,7 +31,6 @@ sales_persons = {
 
 
 # Controlador
-
 def get_sales_meetings_data():
     entries = data.read(SP)
     result_dict = defaultdict(dict)
@@ -46,7 +44,7 @@ def get_sales_meetings_data():
             assigned_to_id = assigned_to[0]['id']
             tag_info = tags[0]
 
-            if tag_info['name'] in ['QUALIFIED', 'NOT QUALIFIED']:
+            if tag_info['name'] in ['QUALIFIED', 'NOT QUALIFIED', 'CANCELLED']:
                 # Replace assigned_to_id with the corresponding name from sales_persons
                 assigned_to_name = sales_persons.get(assigned_to_id, "unknown")
                 result_dict[assigned_to_name][date_start_full] = tag_info['name']
@@ -58,7 +56,7 @@ def count_tags_by_month():
     output_dict = {}
 
     for key, inner_dict in input_dict.items():
-        counts = {"QUALIFIED": {}, "NOT QUALIFIED": {}}
+        counts = {"QUALIFIED": {}, "NOT QUALIFIED": {}, "CANCELLED": {}}
 
         for date_str, value in inner_dict.items():
             # Parse the input date string
@@ -82,24 +80,37 @@ def calculate_stats():
     result_dict = {}
 
     #counts_by_month = count_tags_by_month()
-    counts_by_month = {'MARK': {'QUALIFIED': {'2024-01': 1, '2023-12': 22, '2023-08': 34, '2023-11': 12, '2023-09': 27, '2023-10': 19, '2023-07': 2}, 'NOT QUALIFIED': {'2023-12': 3, '2023-11': 1, '2023-10': 6, '2023-08': 5, '2023-09': 9}}, 'EDUARDO': {'QUALIFIED': {'2023-12': 4, '2023-11': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-12': 8, '2023-11': 4}}, 'MORGAN WEST': {'QUALIFIED': {'2023-11': 9, '2023-09': 20, '2023-12': 7, '2023-08': 11, '2023-10': 6}, 'NOT QUALIFIED': {'2023-12': 10, '2023-08': 3, '2023-09': 4, '2023-11': 1, '2023-10': 5}}, 'MORGAN': {'QUALIFIED': {'2023-08': 8, '2023-05': 12, '2023-07': 21, '2023-06': 12}, 'NOT QUALIFIED': {'2023-05': 7, '2023-07': 5, '2023-06': 3, '2023-08': 2}}, 'JONAS': {'QUALIFIED': {'2023-05': 1, '2023-06': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-05': 3, '2023-06': 4}}, 'ALISON': {'QUALIFIED': {'2023-11': 6, '2023-12': 8, '2023-10': 4}, 'NOT QUALIFIED': {'2023-11': 5, '2023-12': 3, '2023-10': 2}}, 'DYLAN': {'QUALIFIED': {'2023-08': 
-18, '2023-07': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-08': 4}}, 'JAY': {'QUALIFIED': {'2023-07': 9, '2023-09': 9, '2023-08': 1, '2023-06': 3}, 'NOT QUALIFIED': {'2023-07': 5, '2023-10': 1, '2023-08': 1, '2023-06': 3, '2023-09': 1}}, 'unknown': {'QUALIFIED': {'2023-12': 1}, 'NOT QUALIFIED': {}}}
 
+    counts_by_month = {
+        'MARK': {'QUALIFIED': {'2024-01': 1, '2023-12': 22, '2023-08': 34, '2023-11': 12, '2023-09': 27, '2023-10': 19, '2023-07': 2}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 3, '2023-11': 1, '2023-10': 6, '2023-08': 5, '2023-09': 9}, 'CANCELLED': {'2023-10': 3, '2023-11': 2, '2023-09': 3, '2023-12': 1}},
+        'EDUARDO': {'QUALIFIED': {'2023-12': 4, '2023-11': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-12': 8, '2023-11': 4}, 'CANCELLED': {'2023-11': 3, '2023-10': 1, '2023-12': 3}},
+        'MORGAN WEST': {'QUALIFIED': {'2023-11': 9, '2023-09': 20, '2023-12': 7, '2023-08': 11, '2023-10': 6}, 'NOT QUALIFIED': {'2023-12': 10, '2023-08': 3, '2023-09': 4, '2023-11': 1, '2023-10': 5}, 'CANCELLED': {'2023-08': 1, '2023-09': 2}},
+        'MORGAN': {'QUALIFIED': {'2023-08': 8, '2023-05': 12, '2023-07': 21, '2023-06': 12}, 'NOT QUALIFIED': {'2023-05': 7, '2023-07': 5, '2023-06': 3, '2023-08': 2}, 'CANCELLED': {'2023-08': 3, '2023-06': 4, '2023-07': 4, '2023-05': 6}},
+        'JONAS': {'QUALIFIED': {'2023-05': 1, '2023-06': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-05': 3, '2023-06': 4}, 'CANCELLED': {'2023-05': 5, '2023-08': 1}},
+        'ALISON': {'QUALIFIED': {'2023-11': 6, '2023-12': 7, '2023-10': 4}, 'NOT QUALIFIED': {'2023-11': 5, '2023-12': 3, '2023-10': 2}, 'CANCELLED': {'2023-12': 2, '2023-11': 1}},
+        'DYLAN': {'QUALIFIED': {'2023-08': 18, '2023-07': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-08': 4}, 'CANCELLED': {'2023-07': 2}},
+        'JAY': {'QUALIFIED': {'2023-07': 9, '2023-09': 9, '2023-08': 1, '2023-06': 3}, 'NOT QUALIFIED': {'2023-07': 5, '2023-10': 1, '2023-08': 1, '2023-06': 3, '2023-09': 1}, 'CANCELLED': {'2023-07': 1, '2023-05': 1, '2023-06': 1}},
+        'unknown': {'QUALIFIED': {'2023-12': 1}, 'NOT QUALIFIED': {}, 'CANCELLED': {}}
+    }
     for key, counts in counts_by_month.items():
-        total_qualifies = sum(counts['QUALIFIED'].values())
-        total_not_qualifies = sum(counts['NOT QUALIFIED'].values())
+        total_qualifies = sum(counts.get('QUALIFIED', {}).values())
+        not_qualifies = sum(counts.get('NOT QUALIFIED', {}).values())
+        total_cancelled = sum(counts.get('CANCELLED', {}).values())  # Corregir esta línea
 
-        # Finding the month with the maximum 'QUALIFIED' count
-        month_goal = max(counts['QUALIFIED'], key=counts['QUALIFIED'].get, default=None)
-        month_goal_qualifies_amount = counts['QUALIFIED'].get(month_goal, 0)
+        total_not_qualifies = not_qualifies + total_cancelled
 
-        # Calcular los ratios de conversión
+        # Encontrar el mes con la máxima cantidad de 'QUALIFIED'
+        month_goal = max(counts.get('QUALIFIED', {}), key=counts.get('QUALIFIED', {}).get, default=None)
+        month_goal_qualifies_amount = counts.get('QUALIFIED', {}).get(month_goal, 0)
+
+        # Calcular las tasas de conversión
         conversion_rate = total_qualifies / (total_qualifies + total_not_qualifies) if total_qualifies + total_not_qualifies > 0 else 0
         not_qualifies_rate = 1 - conversion_rate
 
         result_dict[key] = {
             'total_qualifies': total_qualifies,
             'total_not_qualifies': total_not_qualifies,
+            'total_cancelled': total_cancelled,
             'month_goal': month_goal,
             'month_goal_qualifies_amount': month_goal_qualifies_amount,
             'conversion_rate': conversion_rate,
@@ -108,15 +119,7 @@ def calculate_stats():
 
     return result_dict
 
-def extract_id_from_read_item(id):
-    response = data.read_item(id)
-    
-    assigned_to = response.get('properties', {}).get('Assigned to', {})
-    if assigned_to.get('people'):
-        return assigned_to['people'][0].get('id')
-    else:
-        return None
-
+# by month
 def filter_stats_by_month(stats_data, selected_month):
     filtered_stats_data = {}
     for salesperson, stats in stats_data.items():
@@ -139,6 +142,7 @@ def filter_stats_by_month(stats_data, selected_month):
 
     return filtered_stats_data
 
+# by range
 def filter_stats_by_range(stats_data, start_year, start_month, end_year, end_month):
     filtered_stats_data = {}
     for salesperson, stats in stats_data.items():
@@ -171,8 +175,9 @@ def filter_stats_by_range(stats_data, start_year, start_month, end_year, end_mon
     return filtered_stats_data
 
 
-# Routes
 
+
+# Routes
 @app.route('/')
 def main_menu():
     return render_template('main_menu.html')
@@ -221,6 +226,7 @@ def get_stats():
         month_goal_qualifies_amount = stats['month_goal_qualifies_amount']
         total_qualifies = stats['total_qualifies']
         total_not_qualifies = stats['total_not_qualifies']
+        total_cancelled = stats['total_cancelled']
         conversion_rate = stats['conversion_rate']
         not_qualifies_rate = stats['not_qualifies_rate']
 
@@ -229,6 +235,7 @@ def get_stats():
             'Month Goal Qualifies Amount': month_goal_qualifies_amount,
             'Total Qualifies': total_qualifies,
             'Total Not Qualifies': total_not_qualifies,
+            'Total Cancelled': total_cancelled,
             'Conversion Rate': f"{conversion_rate:.2%}",
             'Not Qualifies Rate': f"{not_qualifies_rate:.2%}"
         }
@@ -269,6 +276,7 @@ def show_selected_range(selected_year_first, selected_month_first, selected_year
     filtered_stats_data = filter_stats_by_range(stats_data, selected_year_first, selected_month_first, selected_year_second, selected_month_second)
     selected_range = f"{selected_year_first}/{selected_month_first}-to-{selected_year_second}/{selected_month_second}"
     return render_template('show_selected_range.html', selected_range=selected_range, filtered_stats_data=filtered_stats_data)
+
 
 
 if __name__ == '__main__':

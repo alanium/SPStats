@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <form method="GET" action="{{ url_for('main_menu') }}">
-            <button class = "back-button", type="submit">Back</button>
+            <button class="back-button" type="submit">Back</button>
         </form>
         <h2>Stats</h2>
         <img src="{{ img_base64 }}" alt="Qualified and Not Qualified">
@@ -22,6 +22,7 @@
                 <th>Month Goal Qualifies Amount</th>
                 <th>Total Qualifies</th>
                 <th>Total Not Qualifies</th>
+                <th>Total Cancelled</th>
                 <th>Conversion Rate</th>
                 <th>Not Qualifies Rate</th>
             </tr>
@@ -32,6 +33,7 @@
                     <td>{{ summary['Month Goal Qualifies Amount'] }}</td>
                     <td>{{ summary['Total Qualifies'] }}</td>
                     <td>{{ summary['Total Not Qualifies'] }}</td>
+                    <td>{% if 'Total Cancelled' in summary %}{{ summary['Total Cancelled'] }}{% else %}0{% endif %}</td>
                     <td>{{ summary['Conversion Rate'] }}</td>
                     <td>{{ summary['Not Qualifies Rate'] }}</td>
                 </tr>
