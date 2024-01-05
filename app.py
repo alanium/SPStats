@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import data
 import base64
+import io
+
+
 
 
 app = Flask(__name__)
@@ -76,6 +79,39 @@ def count_tags_by_month():
 
     return output_dict
 
+def count_tags_last_30_days():
+    input_dict = get_sales_meetings_data()
+    output_dict = {}
+
+    # Obtén la fecha actual
+    current_date = datetime.now()
+
+    for key, inner_dict in input_dict.items():
+        counts = {"QUALIFIED": {}, "NOT QUALIFIED": {}, "CANCELLED": {}, "PLANNING": {}, "CLOSING": {}, "TURN": {}, "RESCHEDULE" : {}}
+
+        for date_str, value in inner_dict.items():
+            # Parsea la fecha de entrada
+            date_object = datetime.fromisoformat(date_str.split(".")[0])
+
+            # Calcula la diferencia de días entre la fecha actual y la fecha de la reunión
+            days_difference = (current_date - date_object).days
+
+            # Si la reunión ocurrió en los últimos 30 días, procesa la información
+            if 0 <= days_difference <= 30:
+                # Formatea la fecha como "aaaa-mm"
+                formatted_date = date_object.strftime("%Y-%m")
+
+                # Actualiza el recuento para la calificación y el mes correspondientes
+                if value not in counts:
+                    counts[value] = {}
+
+                counts[value][formatted_date] = counts[value].get(formatted_date, 0) + 1
+
+        # Actualiza el diccionario externo con el diccionario de recuento
+        output_dict[key] = counts
+
+    return output_dict
+
 def calculate_stats():
     result_dict = {}
 
@@ -123,6 +159,58 @@ def calculate_stats():
         }
 
     return result_dict
+
+def calculate_stats_last_30_days():
+    result_dict = {}
+
+    #counts_by_month = count_tags_last_30_days()
+
+
+
+    counts_by_month = {'MARK': {'QUALIFIED': {'2024-01': 6, '2023-12': 18}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 2}, 'CANCELLED': {'2023-12': 1}, 'PLANNING': {'2024-01': 2, '2023-12': 10}, 'CLOSING': {'2023-12': 3}, 'TURN': {'2023-12': 1}, 'RESCHEDULE': {'2023-12': 1}}, 'MORGAN WEST': {'QUALIFIED': {'2023-12': 7, '2024-01': 1}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 6}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'EDUARDO': {'QUALIFIED': {'2023-12': 3}, 'NOT QUALIFIED': {'2023-12': 7}, 'CANCELLED': {'2023-12': 2}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {'2023-12': 1}}, 'MORGAN': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'JONAS': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'ALISON': {'QUALIFIED': {'2023-12': 6}, 'NOT QUALIFIED': {'2023-12': 3}, 'CANCELLED': {'2023-12': 1}, 'PLANNING': {'2023-12': 1}, 'CLOSING': {'2023-12': 1}, 'TURN': {}, 'RESCHEDULE': {}}, 'DYLAN': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'JAY': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'unknown': {'QUALIFIED': {'2023-12': 1}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'MILAGROS': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}}
+
+
+
+    for key, counts in counts_by_month.items():
+        qualifies = sum(counts.get('QUALIFIED', {}).values())
+        not_qualifies = sum(counts.get('NOT QUALIFIED', {}).values())
+        cancelled = sum(counts.get('CANCELLED', {}).values())
+        planning = sum(counts.get('PLANNING', {}).values())
+        closing = sum(counts.get('CLOSING', {}).values())
+        turn = sum(counts.get('TURN', {}).values())
+        reschedule = sum(counts.get('RESCHEDULE', {}).values())
+
+        total_qualifies = qualifies + planning + turn + closing
+        total_not_qualifies = not_qualifies + cancelled
+        visited = total_qualifies + total_not_qualifies
+
+        # Encontrar el mes con la máxima cantidad de 'QUALIFIED'
+        month_goal = max(counts.get('QUALIFIED', {}), key=counts.get('QUALIFIED', {}).get, default=None)
+        month_goal_qualifies_amount = counts.get('QUALIFIED', {}).get(month_goal, 0)
+
+        # Calcular las tasas de conversión
+        conversion_rate = total_qualifies / (total_qualifies + total_not_qualifies) if total_qualifies + total_not_qualifies > 0 else 0
+        not_qualifies_rate = 1 - conversion_rate
+
+        cancelled_rate = cancelled / total_not_qualifies if not_qualifies > 0 else 0
+
+        total_cancelled = cancelled + reschedule
+
+
+        result_dict[key] = {
+            'total_qualifies': total_qualifies,
+            'total_not_qualifies': total_not_qualifies,
+            'total_cancelled': total_cancelled,
+            'month_goal': month_goal,
+            'month_goal_qualifies_amount': month_goal_qualifies_amount,
+            'conversion_rate': conversion_rate,
+            'not_qualifies_rate': not_qualifies_rate,
+            'cancelled_rate':cancelled_rate,
+            'visited': visited
+        }
+
+    return result_dict
+
 
 # by month
 def filter_stats_by_month(stats_data, selected_month):
@@ -181,7 +269,6 @@ def filter_stats_by_range(stats_data, start_year, start_month, end_year, end_mon
 
 
 
-
 # Routes
 @app.route('/')
 def main_menu():
@@ -190,7 +277,48 @@ def main_menu():
 @app.route('/get_stats')
 def get_stats():
     stats_data = calculate_stats()
+    stats_data_last_30_days = calculate_stats_last_30_days()
 
+
+
+
+    # Crear gráfico circular
+    plt.figure(figsize=(20, 6))
+    labels = ['Qualified', 'Not Qualified']
+    sizes = [
+        sum(stats['total_qualifies'] for stats in stats_data_last_30_days.values()),
+        sum(stats['total_not_qualifies'] for stats in stats_data_last_30_days.values())
+    ]
+    colors = ['#666666', '#262626']  # Colores más vibrantes
+
+    # Configuración del gráfico
+    plt.pie(sizes, labels=labels, colors=colors, autopct=lambda p: '{:.0f}'.format(p * sum(sizes) / 100),
+            startangle=90, wedgeprops=dict(width=0.4, edgecolor='w'), pctdistance=0.80)
+    
+    # Configuración del porcentaje (tamaño y color)
+    plt.gcf().get_axes()[0].texts[1].set_fontsize(16)
+    plt.gcf().get_axes()[0].texts[1].set_color('white')
+    plt.gcf().get_axes()[0].texts[0].set_fontsize(20)
+    plt.gcf().get_axes()[0].texts[3].set_fontsize(16)
+    plt.gcf().get_axes()[0].texts[3].set_color('white')
+    plt.gcf().get_axes()[0].texts[2].set_fontsize(20)
+
+    # Decoraciones adicionales
+    plt.title('Last 30 Days', fontsize=16)
+    plt.axis('equal')
+
+    # Guardar la imagen en BytesIO
+    img_bytesio = io.BytesIO()
+    plt.savefig(img_bytesio, format='png', bbox_inches='tight')
+    img_bytesio.seek(0)
+
+    # Convertir BytesIO a base64 para incrustar en la plantilla HTML
+    img_base64_last_30_days = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
+
+
+
+
+    
     # Crear gráfico de barras
     plt.figure(figsize=(12, 6))
     width = 0.35  # Ancho de las barras
@@ -249,7 +377,7 @@ def get_stats():
             'Cancelled Rate': f"{cancelled_rate:.2%}"
         }
 
-    return render_template('index.html', img_base64=img_base64, summary_data=summary_data)
+    return render_template('index.html', img_base64_last_30_days = img_base64_last_30_days, img_base64=img_base64, summary_data=summary_data)
 
 @app.route('/select_month', methods=['GET', 'POST'])
 def select_month():
@@ -290,3 +418,4 @@ def show_selected_range(selected_year_first, selected_month_first, selected_year
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
