@@ -211,31 +211,6 @@ def calculate_stats_last_30_days():
 
     return result_dict
 
-def count_total_qualifies_by_month():
-    input_dict = get_sales_meetings_data()
-    output_dict = {}
-
-    for key, inner_dict in input_dict.items():
-        counts = {"QUALIFIED": {}}
-
-        for date_str, value in inner_dict.items():
-            # Parsea la fecha de entrada
-            date_object = datetime.fromisoformat(date_str.split(".")[0])
-
-            # Formatea la fecha como "aaaa-mm"
-            formatted_date = date_object.strftime("%Y-%m")
-
-            # Actualiza el recuento para las calificaciones y el mes correspondiente
-            if value == 'QUALIFIED':
-                counts["QUALIFIED"][formatted_date] = counts["QUALIFIED"].get(formatted_date, 0) + 1
-
-        # Actualiza el diccionario externo con el diccionario de recuento
-        output_dict[key] = counts
-
-    return output_dict
-
-
-
 def aggregate_qualified_by_month():
     sales_data = get_sales_meetings_data()
     result_dict = defaultdict(int)
@@ -248,6 +223,20 @@ def aggregate_qualified_by_month():
                 result_dict[year_month] += 1
 
     sorted_result = dict(sorted(result_dict.items()))  # Ordenar el diccionario por las claves
+
+    return sorted_result
+
+def aggregate_not_qualified_by_month():
+    sales_data = get_sales_meetings_data()
+    result_dict = defaultdict(int)
+
+    for person, person_data in sales_data.items():
+        for date, status in person_data.items():
+            if status in ['NOT QUALIFIED', 'CANCELLED']:
+                year_month = date[:7]
+                result_dict[year_month] += 1
+
+    sorted_result = dict(sorted(result_dict.items()))
 
     return sorted_result
 
@@ -319,27 +308,31 @@ def main_menu():
 def get_stats():
     stats_data = calculate_stats()
     stats_data_last_30_days = calculate_stats_last_30_days()
-
-
     qualified_by_month = aggregate_qualified_by_month()
+    not_qualified_by_month = aggregate_not_qualified_by_month()
+
+
 
     # Crear gráfico de barras para el total de calificaciones por mes
     plt.figure(figsize=(12, 6))
     months = list(qualified_by_month.keys())
     x_positions = range(len(months))
+    bar_width = 0.4  # Ancho de cada barra
 
-    # Crear barras para Total Qualifies por mes
-    total_qualifies_values = list(qualified_by_month.values())
-    plt.bar(x_positions, total_qualifies_values, color='#666666')
+    # Crear barras para Qualified y Not Qualified por mes
+    plt.bar(x_positions, list(qualified_by_month.values()), width=bar_width, color='#666666', label='Qualified')
+    plt.bar([x + bar_width for x in x_positions], list(not_qualified_by_month.values()), width=bar_width, color='#262626', label='Not Qualified')
 
     # Etiquetas en la punta de cada barra
-    for x, total_qualifies in zip(x_positions, total_qualifies_values):
-        plt.text(x, total_qualifies, str(total_qualifies), ha='center', va='bottom')
+    for x, (qualified, not_qualified) in enumerate(zip(qualified_by_month.values(), not_qualified_by_month.values())):
+        plt.text(x, qualified, str(qualified), ha='center', va='bottom')
+        plt.text(x + bar_width, not_qualified, str(not_qualified), ha='center', va='bottom')
 
     plt.xlabel('Date', fontsize=16)  # Tamaño de la fuente del eje x
-    plt.ylabel('Total Qualifies', fontsize=16)  # Tamaño de la fuente del eje y
-    plt.title('Total Qualifies by Month', fontsize=16)  # Tamaño de la fuente del título
-    plt.xticks(x_positions, months, fontsize=15)
+    plt.ylabel('Total Meetings', fontsize=16)  # Tamaño de la fuente del eje y
+    plt.title('Total Meetings by Month', fontsize=16)  # Tamaño de la fuente del título
+    plt.xticks([x + bar_width / 2 for x in x_positions], months, fontsize=15)
+    plt.legend()
 
     # Guardar la imagen en BytesIO
     img_bytesio = BytesIO()
@@ -395,11 +388,11 @@ def get_stats():
 
     # Crear barras para Qualified
     qualified_values = [stats['total_qualifies'] for stats in stats_data.values()]
-    plt.bar(x_positions, qualified_values, width, label='Qualified', color='green')
+    plt.bar(x_positions, qualified_values, width, label='Qualified', color='#666666')
 
     # Crear barras para Not Qualified al lado de las barras de Qualified
     not_qualified_values = [stats['total_not_qualifies'] for stats in stats_data.values()]
-    plt.bar([x + width for x in x_positions], not_qualified_values, width, label='Not Qualified', color='red')
+    plt.bar([x + width for x in x_positions], not_qualified_values, width, label='Not Qualified', color='#262626')
 
     # Etiquetas en la punta de cada barra
     for x, (qualified, not_qualified) in zip(x_positions, zip(qualified_values, not_qualified_values)):
@@ -485,3 +478,4 @@ def show_selected_range(selected_year_first, selected_month_first, selected_year
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
