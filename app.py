@@ -44,7 +44,7 @@ def get_sales_meetings_data():
             assigned_to_id = assigned_to[0]['id']
             tag_info = tags[0]
 
-            if tag_info['name'] in ['QUALIFIED', 'NOT QUALIFIED', 'CANCELLED', 'PLANNING', 'CLOSING', 'TURN']:
+            if tag_info['name'] in ['QUALIFIED', 'NOT QUALIFIED', 'CANCELLED', 'PLANNING', 'CLOSING', 'TURN', 'RESCHEDULE']:
                 # Replace assigned_to_id with the corresponding name from sales_persons
                 assigned_to_name = sales_persons.get(assigned_to_id, "unknown")
                 result_dict[assigned_to_name][date_start_full] = tag_info['name']
@@ -56,7 +56,7 @@ def count_tags_by_month():
     output_dict = {}
 
     for key, inner_dict in input_dict.items():
-        counts = {"QUALIFIED": {}, "NOT QUALIFIED": {}, "CANCELLED": {}, "PLANNING": {}, "CLOSING": {}, "TURN": {}}
+        counts = {"QUALIFIED": {}, "NOT QUALIFIED": {}, "CANCELLED": {}, "PLANNING": {}, "CLOSING": {}, "TURN": {}, "RESCHEDULE" : {}}
 
         for date_str, value in inner_dict.items():
             # Parse the input date string
@@ -74,8 +74,6 @@ def count_tags_by_month():
         # Update the outer dictionary with the count dictionary
         output_dict[key] = counts
 
-    print(output_dict)
-
     return output_dict
 
 def calculate_stats():
@@ -83,20 +81,21 @@ def calculate_stats():
 
     #counts_by_month = count_tags_by_month()
 
-    counts_by_month = {'MARK': {'QUALIFIED': {'2024-01': 6, '2023-12': 21, '2023-08': 34, '2023-11': 12, '2023-09': 27, '2023-10': 19, '2023-07': 2}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 3, '2023-11': 1, '2023-10': 6, '2023-08': 5, '2023-09': 9}, 'CANCELLED': {'2023-10': 2, '2023-11': 2, '2023-09': 3, '2023-12': 1}, 'PLANNING': {'2024-01': 2, '2023-12': 12, '2023-11': 10, '2023-09': 3, '2023-10': 4, '2023-08': 1}, 'CLOSING': {'2023-12': 3, '2023-10': 4, '2023-08': 2, '2023-11': 1}, 'TURN': {'2023-12': 1, '2023-11': 3, '2023-10': 1}}, 'MORGAN WEST': {'QUALIFIED': {'2023-11': 9, '2023-09': 20, '2023-12': 7, '2023-08': 11, '2023-10': 6, '2024-01': 1}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 10, '2023-08': 3, '2023-09': 4, '2023-11': 1, '2023-10': 5}, 'CANCELLED': {'2023-08': 1, '2023-09': 2}, 'PLANNING': {'2023-11': 1}, 'CLOSING': {'2023-08': 1}, 'TURN': {'2023-10': 3}}, 'EDUARDO': {'QUALIFIED': {'2023-12': 4, '2023-11': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-12': 8, '2023-11': 4}, 'CANCELLED': {'2023-11': 3, '2023-10': 1, '2023-12': 3}, 'PLANNING': {'2023-11': 2}, 'CLOSING': {'2023-11': 1}, 'TURN': {}}, 'MORGAN': {'QUALIFIED': {'2023-08': 8, '2023-05': 12, '2023-07': 21, '2023-06': 12}, 'NOT QUALIFIED': {'2023-05': 7, '2023-07': 5, '2023-06': 3, '2023-08': 2}, 'CANCELLED': {'2023-08': 3, '2023-06': 4, '2023-07': 4, '2023-05': 6}, 'PLANNING': {'2023-06': 1}, 'CLOSING': {}, 'TURN': {}}, 'JONAS': {'QUALIFIED': {'2023-05': 1, '2023-06': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-05': 3, '2023-06': 4}, 'CANCELLED': {'2023-05': 5, '2023-08': 1}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {'2023-11': 1}}, 'ALISON': {'QUALIFIED': {'2023-11': 6, '2023-12': 7, '2023-10': 4}, 'NOT QUALIFIED': {'2023-11': 5, '2023-12': 3, '2023-10': 2}, 'CANCELLED': {'2023-12': 2, '2023-11': 1}, 'PLANNING': {'2023-12': 2}, 'CLOSING': {'2023-12': 1}, 'TURN': {}}, 'DYLAN': {'QUALIFIED': {'2023-08': 18, '2023-07': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-08': 4}, 'CANCELLED': {'2023-07': 2}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}}, 'JAY': {'QUALIFIED': {'2023-07': 9, '2023-09': 
-9, '2023-08': 1, '2023-06': 3}, 'NOT QUALIFIED': {'2023-07': 5, '2023-10': 1, '2023-08': 1, '2023-06': 3, '2023-09': 1}, 'CANCELLED': {'2023-07': 1, '2023-05': 1, '2023-06': 1}, 'PLANNING': {'2023-11': 1}, 'CLOSING': {'2023-09': 1, '2023-08': 1}, 'TURN': {}}, 'unknown': {'QUALIFIED': {'2023-12': 1}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}}, 'MILAGROS': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {'2023-06': 1}, 'CLOSING': {}, 'TURN': {}}}
+    counts_by_month = {'MARK': {'QUALIFIED': {'2024-01': 6, '2023-12': 21, '2023-08': 34, '2023-11': 12, '2023-09': 27, '2023-10': 19, '2023-07': 2}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 3, '2023-11': 1, '2023-10': 6, '2023-08': 5, '2023-09': 9}, 'CANCELLED': {'2023-10': 2, '2023-11': 2, '2023-09': 3, '2023-12': 1}, 'PLANNING': {'2024-01': 2, '2023-12': 12, '2023-11': 10, '2023-09': 3, '2023-10': 4, '2023-08': 1}, 'CLOSING': {'2023-12': 3, '2023-10': 4, '2023-08': 2, '2023-11': 1}, 'TURN': {'2023-12': 1, '2023-11': 3, '2023-10': 1}, 'RESCHEDULE': {'2023-12': 1, '2023-09': 3, '2023-08': 1, '2023-10': 2, '2023-11': 1}}, 'MORGAN WEST': {'QUALIFIED': {'2023-11': 9, '2023-09': 20, '2023-12': 7, '2023-08': 11, '2023-10': 6, '2024-01': 1}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 10, '2023-08': 3, '2023-09': 4, '2023-11': 1, '2023-10': 5}, 'CANCELLED': {'2023-08': 1, '2023-09': 2}, 'PLANNING': {'2023-11': 1}, 'CLOSING': {'2023-08': 1}, 'TURN': {'2023-10': 3}, 'RESCHEDULE': {'2023-09': 1, '2023-11': 1}}, 'EDUARDO': {'QUALIFIED': {'2023-12': 
+4, '2023-11': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-12': 8, '2023-11': 4}, 'CANCELLED': {'2023-11': 3, '2023-10': 1, '2023-12': 3}, 'PLANNING': {'2023-11': 2}, 'CLOSING': {'2023-11': 1}, 'TURN': {}, 'RESCHEDULE': {'2023-12': 1}}, 'MORGAN': {'QUALIFIED': {'2023-08': 8, '2023-05': 12, '2023-07': 21, '2023-06': 12}, 'NOT QUALIFIED': {'2023-05': 7, '2023-07': 5, '2023-06': 3, '2023-08': 2}, 'CANCELLED': {'2023-08': 3, '2023-06': 4, '2023-07': 4, '2023-05': 6}, 'PLANNING': {'2023-06': 1}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {'2023-07': 1, '2023-06': 1, '2023-05': 3}}, 'JONAS': {'QUALIFIED': {'2023-05': 1, '2023-06': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-05': 3, '2023-06': 4}, 'CANCELLED': {'2023-05': 5, '2023-08': 1}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {'2023-11': 1}, 'RESCHEDULE': {'2023-06': 1}}, 'ALISON': {'QUALIFIED': {'2023-11': 6, '2023-12': 7, '2023-10': 4}, 'NOT QUALIFIED': {'2023-11': 5, '2023-12': 3, '2023-10': 2}, 'CANCELLED': {'2023-12': 2, '2023-11': 1}, 'PLANNING': {'2023-12': 2}, 'CLOSING': {'2023-12': 1}, 'TURN': {}, 'RESCHEDULE': {'2023-11': 1}}, 'DYLAN': {'QUALIFIED': {'2023-08': 18, '2023-07': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-08': 4}, 'CANCELLED': {'2023-07': 2}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'JAY': {'QUALIFIED': {'2023-07': 9, '2023-09': 9, '2023-08': 1, '2023-06': 3}, 'NOT QUALIFIED': {'2023-07': 5, '2023-10': 1, '2023-08': 1, '2023-06': 3, '2023-09': 1}, 'CANCELLED': {'2023-07': 1, '2023-05': 1, '2023-06': 1}, 'PLANNING': {'2023-11': 1}, 'CLOSING': {'2023-09': 1, '2023-08': 1}, 'TURN': {}, 'RESCHEDULE': {'2023-06': 2, '2023-10': 1, '2023-07': 1}}, 'unknown': {'QUALIFIED': {'2023-12': 1}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'MILAGROS': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {'2023-06': 1}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}}
 
     for key, counts in counts_by_month.items():
         qualifies = sum(counts.get('QUALIFIED', {}).values())
         not_qualifies = sum(counts.get('NOT QUALIFIED', {}).values())
-        total_cancelled = sum(counts.get('CANCELLED', {}).values())
+        cancelled = sum(counts.get('CANCELLED', {}).values())
         planning = sum(counts.get('PLANNING', {}).values())
         closing = sum(counts.get('CLOSING', {}).values())
         turn = sum(counts.get('TURN', {}).values())
+        reschedule = sum(counts.get('RESCHEDULE', {}).values())
 
         total_qualifies = qualifies + planning + turn + closing
-
-        total_not_qualifies = not_qualifies + total_cancelled
+        total_not_qualifies = not_qualifies + cancelled
+        visited = total_qualifies + total_not_qualifies
 
         # Encontrar el mes con la máxima cantidad de 'QUALIFIED'
         month_goal = max(counts.get('QUALIFIED', {}), key=counts.get('QUALIFIED', {}).get, default=None)
@@ -106,7 +105,9 @@ def calculate_stats():
         conversion_rate = total_qualifies / (total_qualifies + total_not_qualifies) if total_qualifies + total_not_qualifies > 0 else 0
         not_qualifies_rate = 1 - conversion_rate
 
-        cancelled_rate = total_cancelled / total_not_qualifies if not_qualifies > 0 else 0
+        cancelled_rate = cancelled / total_not_qualifies if not_qualifies > 0 else 0
+
+        total_cancelled = cancelled + reschedule
 
 
         result_dict[key] = {
@@ -117,7 +118,8 @@ def calculate_stats():
             'month_goal_qualifies_amount': month_goal_qualifies_amount,
             'conversion_rate': conversion_rate,
             'not_qualifies_rate': not_qualifies_rate,
-            'cancelled_rate':cancelled_rate
+            'cancelled_rate':cancelled_rate,
+            'visited': visited
         }
 
     return result_dict
@@ -134,11 +136,11 @@ def filter_stats_by_month(stats_data, selected_month):
         not_qualifies_rate = stats['not_qualifies_rate']
 
         if month_goal and month_goal.startswith(selected_month):
-            filtered_stats_data[salesperson] = {
-                'Month Goal': month_goal,
-                'Month Goal Qualifies Amount': month_goal_qualifies_amount,
+            filtered_stats_data[salesperson] = {                
                 'Total Qualifies': total_qualifies,
                 'Total Not Qualifies': total_not_qualifies,
+                'Month Goal': month_goal,
+                'Month Goal Qualifies Amount': month_goal_qualifies_amount,
                 'Conversion Rate': f"{conversion_rate:.2%}",
                 'Not Qualifies Rate': f"{not_qualifies_rate:.2%}"
             }
@@ -230,6 +232,7 @@ def get_stats():
         total_qualifies = stats['total_qualifies']
         total_not_qualifies = stats['total_not_qualifies']
         total_cancelled = stats['total_cancelled']
+        visited = stats['visited']
         conversion_rate = stats['conversion_rate']
         not_qualifies_rate = stats['not_qualifies_rate']
         cancelled_rate = stats['cancelled_rate']
@@ -240,6 +243,7 @@ def get_stats():
             'Total Qualifies': total_qualifies,
             'Total Not Qualifies': total_not_qualifies,
             'Total Cancelled': total_cancelled,
+            'visited': visited,
             'Conversion Rate': f"{conversion_rate:.2%}",
             'Not Qualifies Rate': f"{not_qualifies_rate:.2%}",
             'Cancelled Rate': f"{cancelled_rate:.2%}"

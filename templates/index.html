@@ -26,6 +26,7 @@
                 <th>Conversion Rate</th>
                 <th>Not Qualifies Rate</th>
                 <th>Cancelled Rate</th>
+                <th>Total Visited</th>
             </tr>
             {% for salesperson, summary in summary_data.items() %}
                 <tr>
@@ -38,6 +39,7 @@
                     <td>{{ summary['Conversion Rate'] }}</td>
                     <td>{{ summary['Not Qualifies Rate'] }}</td>
                     <td>{{ summary['Cancelled Rate'] }}</td>
+                    <td>{{ summary['visited'] }}</td>
 
                 </tr>
             {% endfor %}
