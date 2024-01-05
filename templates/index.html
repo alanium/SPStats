@@ -10,9 +10,7 @@
     <div class="container">
         <form method="GET" action="{{ url_for('main_menu') }}">
             <button class="back-button" type="submit">Back</button>
-        </form>
-        <h2>Stats</h2>
-        <img src="{{ img_base64 }}" alt="Qualified and Not Qualified">
+        </form>  
 
         <div class="chart-container">
             <div class="chart-circular">
@@ -23,26 +21,25 @@
             </div>            
         </div>
 
-
+        <hr>
         <h2>Salesperson Summary</h2>
+        
         <table>
             <tr>
                 <th>Salesperson</th>
-                <th>Month Goal</th>
-                <th>Month Goal Qualifies Amount</th>
-                <th>Total Qualifies</th>
-                <th>Total Not Qualifies</th>
+                <th>Total Qualified</th>
+                <th>Total Not Qualified</th>
                 <th>Total Cancelled</th>
-                <th>Conversion Rate</th>
+                <th>Qualifies Rate</th>
                 <th>Not Qualifies Rate</th>
                 <th>Cancelled Rate</th>
                 <th>Total Visited</th>
+                <th>Best Month</th>
+                <th>Best Month Amount</th>
             </tr>
             {% for salesperson, summary in summary_data.items() %}
                 <tr>
                     <td>{{ salesperson }}</td>
-                    <td>{{ summary['Month Goal'] }}</td>
-                    <td>{{ summary['Month Goal Qualifies Amount'] }}</td>
                     <td>{{ summary['Total Qualifies'] }}</td>
                     <td>{{ summary['Total Not Qualifies'] }}</td>
                     <td>{% if 'Total Cancelled' in summary %}{{ summary['Total Cancelled'] }}{% else %}0{% endif %}</td>
@@ -50,10 +47,14 @@
                     <td>{{ summary['Not Qualifies Rate'] }}</td>
                     <td>{{ summary['Cancelled Rate'] }}</td>
                     <td>{{ summary['visited'] }}</td>
+                    <td>{{ summary['Month Goal'] }}</td>
+                    <td>{{ summary['Month Goal Qualifies Amount'] }}</td>
 
                 </tr>
             {% endfor %}
         </table>
+        
+    <img src="{{ img_base64 }}" alt="Qualified and Not Qualified">
     </div>
 </body>
 </html>

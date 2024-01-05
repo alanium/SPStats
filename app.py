@@ -241,7 +241,6 @@ def aggregate_not_qualified_by_month():
     return sorted_result
 
 
-
 # by month
 def filter_stats_by_month(stats_data, selected_month):
     filtered_stats_data = {}
@@ -311,7 +310,8 @@ def get_stats():
     qualified_by_month = aggregate_qualified_by_month()
     not_qualified_by_month = aggregate_not_qualified_by_month()
 
-
+    light_blue = '#5A95DB'
+    dark_blue = '#142F50'
 
     # Crear gráfico de barras para el total de calificaciones por mes
     plt.figure(figsize=(12, 6))
@@ -320,19 +320,19 @@ def get_stats():
     bar_width = 0.4  # Ancho de cada barra
 
     # Crear barras para Qualified y Not Qualified por mes
-    plt.bar(x_positions, list(qualified_by_month.values()), width=bar_width, color='#666666', label='Qualified')
-    plt.bar([x + bar_width for x in x_positions], list(not_qualified_by_month.values()), width=bar_width, color='#262626', label='Not Qualified')
+    plt.bar(x_positions, list(qualified_by_month.values()), width=bar_width, color=light_blue, label='Qualified')
+    plt.bar([x + bar_width for x in x_positions], list(not_qualified_by_month.values()), width=bar_width, color=dark_blue, label='Not Qualified')
 
     # Etiquetas en la punta de cada barra
     for x, (qualified, not_qualified) in enumerate(zip(qualified_by_month.values(), not_qualified_by_month.values())):
-        plt.text(x, qualified, str(qualified), ha='center', va='bottom')
-        plt.text(x + bar_width, not_qualified, str(not_qualified), ha='center', va='bottom')
+        plt.text(x, qualified, str(qualified), ha='center', va='bottom', fontsize=16)
+        plt.text(x + bar_width, not_qualified, str(not_qualified), ha='center', va='bottom', fontsize=16)
 
-    plt.xlabel('Date', fontsize=16)  # Tamaño de la fuente del eje x
-    plt.ylabel('Total Meetings', fontsize=16)  # Tamaño de la fuente del eje y
-    plt.title('Total Meetings by Month', fontsize=16)  # Tamaño de la fuente del título
+    plt.title('Total Meetings', fontsize=16)
     plt.xticks([x + bar_width / 2 for x in x_positions], months, fontsize=15)
     plt.legend()
+
+    plt.box(False)
 
     # Guardar la imagen en BytesIO
     img_bytesio = BytesIO()
@@ -341,7 +341,9 @@ def get_stats():
 
     # Convertir BytesIO a base64 para incrustar en la plantilla HTML
     img_base64_total_qualifies = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
-    
+
+
+
 
 
 
@@ -352,7 +354,7 @@ def get_stats():
         sum(stats['total_qualifies'] for stats in stats_data_last_30_days.values()),
         sum(stats['total_not_qualifies'] for stats in stats_data_last_30_days.values())
     ]
-    colors = ['#666666', '#262626']
+    colors = light_blue, dark_blue
 
     # Configuración del gráfico
     plt.pie(sizes, labels=labels, colors=colors, autopct=lambda p: '{:.0f}'.format(p * sum(sizes) / 100),
@@ -377,7 +379,9 @@ def get_stats():
 
     # Convertir BytesIO a base64 para incrustar en la plantilla HTML
     img_base64_last_30_days = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
-    
+
+
+
 
 
     # Crear gráfico de barras
@@ -388,11 +392,11 @@ def get_stats():
 
     # Crear barras para Qualified
     qualified_values = [stats['total_qualifies'] for stats in stats_data.values()]
-    plt.bar(x_positions, qualified_values, width, label='Qualified', color='#666666')
+    plt.bar(x_positions, qualified_values, width, label='Qualified', color=light_blue)
 
     # Crear barras para Not Qualified al lado de las barras de Qualified
     not_qualified_values = [stats['total_not_qualifies'] for stats in stats_data.values()]
-    plt.bar([x + width for x in x_positions], not_qualified_values, width, label='Not Qualified', color='#262626')
+    plt.bar([x + width for x in x_positions], not_qualified_values, width, label='Not Qualified', color=dark_blue)
 
     # Etiquetas en la punta de cada barra
     for x, (qualified, not_qualified) in zip(x_positions, zip(qualified_values, not_qualified_values)):
