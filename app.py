@@ -211,6 +211,29 @@ def calculate_stats_last_30_days():
 
     return result_dict
 
+def count_total_qualifies_by_month():
+    input_dict = get_sales_meetings_data()
+    output_dict = {}
+
+    for key, inner_dict in input_dict.items():
+        counts = {"QUALIFIED": {}}
+
+        for date_str, value in inner_dict.items():
+            # Parsea la fecha de entrada
+            date_object = datetime.fromisoformat(date_str.split(".")[0])
+
+            # Formatea la fecha como "aaaa-mm"
+            formatted_date = date_object.strftime("%Y-%m")
+
+            # Actualiza el recuento para las calificaciones y el mes correspondiente
+            if value == 'QUALIFIED':
+                counts["QUALIFIED"][formatted_date] = counts["QUALIFIED"].get(formatted_date, 0) + 1
+
+        # Actualiza el diccionario externo con el diccionario de recuento
+        output_dict[key] = counts
+
+    return output_dict
+
 
 # by month
 def filter_stats_by_month(stats_data, selected_month):
@@ -278,9 +301,33 @@ def main_menu():
 def get_stats():
     stats_data = calculate_stats()
     stats_data_last_30_days = calculate_stats_last_30_days()
+    total_qualifies_by_month = count_total_qualifies_by_month()
 
+    # Crear gráfico de barras para el total de calificaciones por mes
+    plt.figure(figsize=(12, 6))
+    months = list(total_qualifies_by_month['MARK']['QUALIFIED'].keys())
+    x_positions = range(len(months))
 
+    # Crear barras para Total Qualifies por mes
+    total_qualifies_values = [sum(stats.get('QUALIFIED', {}).get(month, 0) for stats in total_qualifies_by_month.values()) for month in months]
+    plt.bar(x_positions, total_qualifies_values, color='#666666')
 
+    # Etiquetas en la punta de cada barra
+    for x, total_qualifies in zip(x_positions, total_qualifies_values):
+        plt.text(x, total_qualifies, str(total_qualifies), ha='center', va='bottom')
+
+    plt.xlabel('Month')
+    plt.ylabel('Total Qualifies')
+    plt.title('Total Qualifies by Month')
+    plt.xticks(x_positions, months)  # Posicionar etiquetas en el centro de cada barra
+
+    # Guardar la imagen en BytesIO
+    img_bytesio = BytesIO()
+    plt.savefig(img_bytesio, format='png')
+    img_bytesio.seek(0)
+
+    # Convertir BytesIO a base64 para incrustar en la plantilla HTML
+    img_base64_total_qualifies = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
 
     # Crear gráfico circular
     plt.figure(figsize=(20, 6))
@@ -314,10 +361,6 @@ def get_stats():
 
     # Convertir BytesIO a base64 para incrustar en la plantilla HTML
     img_base64_last_30_days = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
-
-
-
-
     
     # Crear gráfico de barras
     plt.figure(figsize=(12, 6))
@@ -377,7 +420,7 @@ def get_stats():
             'Cancelled Rate': f"{cancelled_rate:.2%}"
         }
 
-    return render_template('index.html', img_base64_last_30_days = img_base64_last_30_days, img_base64=img_base64, summary_data=summary_data)
+    return render_template('index.html', img_base64_total_qualifies=img_base64_total_qualifies, img_base64_last_30_days = img_base64_last_30_days, img_base64=img_base64, summary_data=summary_data)
 
 @app.route('/select_month', methods=['GET', 'POST'])
 def select_month():
