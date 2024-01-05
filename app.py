@@ -7,6 +7,11 @@ from io import BytesIO
 import data
 import base64
 import io
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'AOHDNBIAAI189SD!A1'
@@ -313,7 +318,7 @@ def get_stats():
     light_blue = '#5A95DB'
     dark_blue = '#142F50'
 
-    # Crear gráfico de barras para el total de calificaciones por mes
+    # ---------------- gráfico de barras ----------------
     plt.figure(figsize=(12, 6))
     months = list(qualified_by_month.keys())
     x_positions = range(len(months))
@@ -342,49 +347,46 @@ def get_stats():
     # Convertir BytesIO a base64 para incrustar en la plantilla HTML
     img_base64_total_qualifies = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
 
-
-
-
-
-
-    # Crear gráfico circular
-    plt.figure(figsize=(6, 6))
+    # ----------------gráfico circular----------------
     labels = ['Qualified', 'Not Qualified']
-    sizes = [
+    values = [
         sum(stats['total_qualifies'] for stats in stats_data_last_30_days.values()),
         sum(stats['total_not_qualifies'] for stats in stats_data_last_30_days.values())
     ]
-    colors = light_blue, dark_blue
 
-    # Configuración del gráfico
-    plt.pie(sizes, labels=labels, colors=colors, autopct=lambda p: '{:.0f}'.format(p * sum(sizes) / 100),
-            startangle=90, wedgeprops=dict(width=0.4, edgecolor='w'), pctdistance=0.80)
-    
-    # Configuración del porcentaje (tamaño y color)
-    plt.gcf().get_axes()[0].texts[1].set_fontsize(16)
-    plt.gcf().get_axes()[0].texts[1].set_color('white')
-    plt.gcf().get_axes()[0].texts[0].set_fontsize(20)
-    plt.gcf().get_axes()[0].texts[3].set_fontsize(16)
-    plt.gcf().get_axes()[0].texts[3].set_color('white')
-    plt.gcf().get_axes()[0].texts[2].set_fontsize(20)
+    # Append data and assign color
+    labels.append("")
+    values.append(sum(values))  # 50% blank
+    colors = [light_blue, dark_blue, 'white']
+
+    # Plot
+    fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
+    wedges, _ = ax.pie(values, colors=colors, wedgeprops=dict(width=0.4))
 
     # Decoraciones adicionales
     plt.title('Last 30 Days', fontsize=16)
-    plt.axis('equal')
 
-    # Guardar la imagen en BytesIO
-    img_bytesio = io.BytesIO()
-    plt.savefig(img_bytesio, format='png', bbox_inches='tight')
-    img_bytesio.seek(0)
+    # Agregar círculo blanco
+    ax.add_artist(plt.Circle((0, 0), 0.6, color='white'))
 
-    # Convertir BytesIO a base64 para incrustar en la plantilla HTML
-    img_base64_last_30_days = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
+    # Ajustar el diseño para que se vea más limpio
+    ax.axis('equal')
+
+    # Añadir cantidad debajo de los labels
+    ax.text(0.8, -0.2, f'{values[0]} Qualifies', ha='center', va='center', color='black', fontsize=16)
+    ax.text(-0.8, -0.2, f'{values[1]} Not Qualifies', ha='center', va='center', color='black', fontsize=16)
+
+    # Quitar la caja de estadísticas
+    ax.legend().set_visible(False)
+
+    # Convertir el diagrama a BytesIO y luego a Base64
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    img_base64_last_30_days = f"data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode('utf-8')}"
 
 
-
-
-
-    # Crear gráfico de barras
+    # ---------------- gráfico de barras ----------------
     plt.figure(figsize=(12, 6))
     width = 0.35  # Ancho de las barras
     salespersons = list(stats_data.keys())
@@ -408,6 +410,7 @@ def get_stats():
     plt.title('Qualified and Not Qualified Counts for Salespersons')
     plt.xticks([x + width / 2 for x in x_positions], salespersons)  # Posicionar etiquetas en el centro de cada par de barras
     plt.legend()
+    plt.box(False)
 
     # Guardar la imagen en BytesIO
     img_bytesio = BytesIO()
@@ -416,6 +419,7 @@ def get_stats():
 
     # Convertir BytesIO a base64 para incrustar en la plantilla HTML
     img_base64 = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
+
 
     # Crear resumen de cada salesperson
     summary_data = {}
