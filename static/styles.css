@@ -85,3 +85,16 @@ select {
     border-radius: 4px;
     box-sizing: border-box;
 }
+
+.chart-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.chart-circular {
+    width: 38%; /* Ajusta el ancho según tus necesidades */
+}
+.chart-month {
+    width: 60%; /* Ajusta el ancho según tus necesidades */
+}

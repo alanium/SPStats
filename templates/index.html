@@ -13,8 +13,15 @@
         </form>
         <h2>Stats</h2>
         <img src="{{ img_base64 }}" alt="Qualified and Not Qualified">
-        <img src="{{ img_base64_last_30_days }}" alt="Qualified and Not Qualified">
-        <img src="{{ img_base64_total_qualifies }}" alt="Qualified and Not Qualified">
+
+        <div class="chart-container">
+            <div class="chart-circular">
+                <img src="{{ img_base64_last_30_days }}" alt="Last 30 Days">
+            </div>
+            <div class="chart-month">
+                <img src="{{ img_base64_total_qualifies }}" alt="Total Qualifies by Month">
+            </div>            
+        </div>
 
 
         <h2>Salesperson Summary</h2>

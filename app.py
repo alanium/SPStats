@@ -165,11 +165,7 @@ def calculate_stats_last_30_days():
 
     #counts_by_month = count_tags_last_30_days()
 
-
-
     counts_by_month = {'MARK': {'QUALIFIED': {'2024-01': 6, '2023-12': 18}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 2}, 'CANCELLED': {'2023-12': 1}, 'PLANNING': {'2024-01': 2, '2023-12': 10}, 'CLOSING': {'2023-12': 3}, 'TURN': {'2023-12': 1}, 'RESCHEDULE': {'2023-12': 1}}, 'MORGAN WEST': {'QUALIFIED': {'2023-12': 7, '2024-01': 1}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 6}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'EDUARDO': {'QUALIFIED': {'2023-12': 3}, 'NOT QUALIFIED': {'2023-12': 7}, 'CANCELLED': {'2023-12': 2}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {'2023-12': 1}}, 'MORGAN': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'JONAS': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'ALISON': {'QUALIFIED': {'2023-12': 6}, 'NOT QUALIFIED': {'2023-12': 3}, 'CANCELLED': {'2023-12': 1}, 'PLANNING': {'2023-12': 1}, 'CLOSING': {'2023-12': 1}, 'TURN': {}, 'RESCHEDULE': {}}, 'DYLAN': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'JAY': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'unknown': {'QUALIFIED': {'2023-12': 1}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'MILAGROS': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}}
-
-
 
     for key, counts in counts_by_month.items():
         qualifies = sum(counts.get('QUALIFIED', {}).values())
@@ -316,10 +312,11 @@ def get_stats():
     for x, total_qualifies in zip(x_positions, total_qualifies_values):
         plt.text(x, total_qualifies, str(total_qualifies), ha='center', va='bottom')
 
-    plt.xlabel('Month')
-    plt.ylabel('Total Qualifies')
-    plt.title('Total Qualifies by Month')
-    plt.xticks(x_positions, months)  # Posicionar etiquetas en el centro de cada barra
+    plt.xlabel('Date', fontsize=16)  # Tamaño de la fuente del eje x
+    plt.ylabel('Total Qualifies', fontsize=16)  # Tamaño de la fuente del eje y
+    plt.title('Total Qualifies by Month', fontsize=16)  # Tamaño de la fuente del título
+    plt.xticks(x_positions, months, fontsize=16)
+
 
     # Guardar la imagen en BytesIO
     img_bytesio = BytesIO()
@@ -329,14 +326,17 @@ def get_stats():
     # Convertir BytesIO a base64 para incrustar en la plantilla HTML
     img_base64_total_qualifies = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
 
+
+
+
     # Crear gráfico circular
-    plt.figure(figsize=(20, 6))
+    plt.figure(figsize=(6, 6))
     labels = ['Qualified', 'Not Qualified']
     sizes = [
         sum(stats['total_qualifies'] for stats in stats_data_last_30_days.values()),
         sum(stats['total_not_qualifies'] for stats in stats_data_last_30_days.values())
     ]
-    colors = ['#666666', '#262626']  # Colores más vibrantes
+    colors = ['#666666', '#262626']
 
     # Configuración del gráfico
     plt.pie(sizes, labels=labels, colors=colors, autopct=lambda p: '{:.0f}'.format(p * sum(sizes) / 100),
@@ -362,6 +362,8 @@ def get_stats():
     # Convertir BytesIO a base64 para incrustar en la plantilla HTML
     img_base64_last_30_days = f"data:image/png;base64,{base64.b64encode(img_bytesio.getvalue()).decode()}"
     
+
+
     # Crear gráfico de barras
     plt.figure(figsize=(12, 6))
     width = 0.35  # Ancho de las barras
