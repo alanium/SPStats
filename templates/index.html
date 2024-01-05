@@ -19,42 +19,47 @@
             <div class="chart-month">
                 <img src="{{ img_base64_total_qualifies }}" alt="Total Qualifies by Month">
             </div>            
-        </div>
-
-        <hr>
-        <h2>Salesperson Summary</h2>
+        </div>        
         
-        <table>
-            <tr>
-                <th>Salesperson</th>
-                <th>Total Qualified</th>
-                <th>Total Not Qualified</th>
-                <th>Total Cancelled</th>
-                <th>Qualifies Rate</th>
-                <th>Not Qualifies Rate</th>
-                <th>Cancelled Rate</th>
-                <th>Total Visited</th>
-                <th>Best Month</th>
-                <th>Best Month Amount</th>
-            </tr>
-            {% for salesperson, summary in summary_data.items() %}
+        <div class = 'table-container'>
+            <h2>Salesperson Summary</h2>
+            <table>
                 <tr>
-                    <td>{{ salesperson }}</td>
-                    <td>{{ summary['Total Qualifies'] }}</td>
-                    <td>{{ summary['Total Not Qualifies'] }}</td>
-                    <td>{% if 'Total Cancelled' in summary %}{{ summary['Total Cancelled'] }}{% else %}0{% endif %}</td>
-                    <td>{{ summary['Conversion Rate'] }}</td>
-                    <td>{{ summary['Not Qualifies Rate'] }}</td>
-                    <td>{{ summary['Cancelled Rate'] }}</td>
-                    <td>{{ summary['visited'] }}</td>
-                    <td>{{ summary['Month Goal'] }}</td>
-                    <td>{{ summary['Month Goal Qualifies Amount'] }}</td>
-
+                    <th>Salesperson</th>
+                    <th>Total Qualified</th>
+                    <th>Total Not Qualified</th>
+                    <th>Total Cancelled</th>
+                    <th>Qualifies Rate</th>
+                    <th>Not Qualifies Rate</th>
+                    <th>Cancelled Rate</th>
+                    <th>Total Visited</th>
+                    <th>Best Month</th>
+                    <th>Best Month Amount</th>
                 </tr>
-            {% endfor %}
-        </table>
+                {% for salesperson, summary in summary_data.items() %}
+                    <tr>
+                        <td>{{ salesperson }}</td>
+                        <td>{{ summary['Total Qualifies'] }}</td>
+                        <td>{{ summary['Total Not Qualifies'] }}</td>
+                        <td>{% if 'Total Cancelled' in summary %}{{ summary['Total Cancelled'] }}{% else %}0{% endif %}</td>
+                        <td>{{ summary['Conversion Rate'] }}</td>
+                        <td>{{ summary['Not Qualifies Rate'] }}</td>
+                        <td>{{ summary['Cancelled Rate'] }}</td>
+                        <td>{{ summary['visited'] }}</td>
+                        <td>{{ summary['Month Goal'] }}</td>
+                        <td>{{ summary['Month Goal Qualifies Amount'] }}</td>
+    
+                    </tr>
+                {% endfor %}
+            </table>
+
+        </div>
         
-    <img src="{{ img_base64 }}" alt="Qualified and Not Qualified">
+        
+    
+    <div class="generic-chart">
+        <img src="{{ img_base64 }}" alt="Qualified and Not Qualified">
+    </div>
     
     </div>
 </body>
