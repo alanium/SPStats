@@ -148,8 +148,6 @@ def calculate_stats(start_year=None, start_month=None, end_year=None, end_month=
 
     return result_dict
 
-
-
 def count_tags_last_30_days():
     input_dict = get_sales_meetings_data()
     output_dict = {}

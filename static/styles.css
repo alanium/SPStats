@@ -152,7 +152,7 @@ select {
 }
 
 .filters select {
-    width: 80px; /* Ajusta el ancho según tus preferencias */
+    width: 100%; /* Ajusta el ancho según tus preferencias */
 }
 
 .filters button {
@@ -181,4 +181,24 @@ select {
     .filters button {
         width: 100%; /* Ocupa todo el ancho disponible */
     }
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 30px;
+}
+
+hr {
+    flex: 1;
+    border: 0;
+    height: 1px;
+    background: #969696;
+    margin: 0 10px; /* Espaciado entre hr y h3 */
+}
+
+h3 {
+    margin: 10px 0;
 }
