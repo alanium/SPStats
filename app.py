@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect,url_for
+from flask_caching import Cache
 import json
 from collections import defaultdict
 from datetime import datetime
@@ -14,6 +15,10 @@ matplotlib.use('Agg')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'AOHDNBIAAI189SD!A1'
+
+# Configuración de la caché
+cache = Cache(app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': 86400})  # 604800 segundos = 1 semana
+
 
 with open('config.json', 'r') as config_file:
     constants = json.load(config_file)
@@ -35,8 +40,13 @@ sales_persons = {
 
 
 # Controller
-def get_sales_meetings_data(start_year=None, start_month=None, end_year=None, end_month=None):
+@cache.cached()
+def get_data():
     entries = data.read(SP)
+    return entries
+
+def get_sales_meetings_data(start_year=None, start_month=None, end_year=None, end_month=None):
+    entries = get_data()
     result_dict = defaultdict(dict)
 
     for entry in entries:
