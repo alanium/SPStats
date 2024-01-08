@@ -12,7 +12,6 @@ import matplotlib
 matplotlib.use('Agg')
 
 
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'AOHDNBIAAI189SD!A1'
 
@@ -36,8 +35,8 @@ sales_persons = {
 
 
 # Controller
-def get_sales_meetings_data():
-    """entries = data.read(SP)
+def get_sales_meetings_data(start_year=None, start_month=None, end_year=None, end_month=None):
+    entries = data.read(SP)
     result_dict = defaultdict(dict)
 
     for entry in entries:
@@ -50,21 +49,27 @@ def get_sales_meetings_data():
             tag_info = tags[0]
 
             if tag_info['name'] in ['QUALIFIED', 'NOT QUALIFIED', 'CANCELLED', 'PLANNING', 'CLOSING', 'TURN', 'RESCHEDULE']:
-                # Replace assigned_to_id with the corresponding name from sales_persons
                 assigned_to_name = sales_persons.get(assigned_to_id, "unknown")
-                result_dict[assigned_to_name][date_start_full] = tag_info['name']
 
-    return dict(result_dict)"""
+                # Parse the input date string
+                try:
+                    date_object = datetime.fromisoformat(date_start_full.split("T")[0])
 
+                    # Check if the date is within the specified range
+                    if start_year and start_month and end_year and end_month:
+                        if not (start_year <= date_object.year <= end_year and start_month <= date_object.month <= end_month):
+                            continue
 
-    return {'MARK': {'2024-01-04T12:30:00.000-06:00': 'PLANNING', '2024-01-04T10:00:00.000-06:00': 'QUALIFIED', '2024-01-03T13:00:00.000-06:00': 'PLANNING', '2024-01-04T14:00:00.000-06:00': 'QUALIFIED', '2024-01-03T17:00:00.000-06:00': 'QUALIFIED', '2024-01-03T16:00:00.000-06:00': 'QUALIFIED', '2024-01-03T09:00:00.000-06:00': 'NOT QUALIFIED', '2024-01-03T10:00:00.000-06:00': 'QUALIFIED', '2024-01-02T12:30:00.000-06:00': 'QUALIFIED', '2023-12-29T15:00:00.000-06:00': 'CLOSING', '2023-12-29T10:00:00.000-06:00': 'PLANNING', '2023-12-28T17:00:00.000-06:00': 'QUALIFIED', '2023-12-30T13:00:00.000-06:00': 'CLOSING', '2023-12-28T14:00:00.000-06:00': 'QUALIFIED', '2023-12-28T15:00:00.000-06:00': 'PLANNING', '2023-12-29T11:30:00.000-06:00': 'CLOSING', '2023-12-28T12:30:00.000-06:00': 'QUALIFIED', '2023-12-27T14:00:00.000-06:00': 'QUALIFIED', '2023-12-27T11:00:00.000-06:00': 'PLANNING', '2023-12-28T09:00:00.000-06:00': 'RESCHEDULE', '2023-12-26T09:00:00.000-06:00': 'TURN', '2023-12-27T13:00:00.000-06:00': 'QUALIFIED', '2023-12-22T16:00:00.000-06:00': 'PLANNING', '2023-12-21T09:00:00.000-06:00': 'PLANNING', '2023-12-21T07:30:00.000-06:00': 'PLANNING', '2023-12-22T11:00:00.000-06:00': 'QUALIFIED', '2023-12-20T09:00:00.000-06:00': 'NOT QUALIFIED', 
-'2023-11-15T14:30:00.000-06:00': 'PLANNING', '2023-12-06T10:00:00.000-06:00': 'QUALIFIED', '2023-11-04T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-10-28T09:00:00.000-05:00': 'CANCELLED', '2023-11-15T12:00:00.000-06:00': 'TURN', '2023-09-01T09:00:00.000-05:00': 'PLANNING', '2023-12-14T16:30:00.000-06:00': 'QUALIFIED', '2023-10-02T16:00:00.000-06:00': 'NOT QUALIFIED', '2023-08-10T14:00:00.000-05:00': 'QUALIFIED', '2023-10-25T10:00:00.000-05:00': 'PLANNING', '2023-08-01T11:00:00.000-05:00': 'QUALIFIED', '2023-11-16T09:00:00.000-06:00': 'QUALIFIED', '2023-08-14T09:00:00.000-05:00': 'QUALIFIED', '2023-08-21T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-23T10:00:00.000-05:00': 'QUALIFIED', '2023-08-19T12:30:00.000-05:00': 'QUALIFIED', '2023-12-19T17:00:00.000-06:00': 'PLANNING', '2023-08-05T11:00:00.000-05:00': 'QUALIFIED', '2023-08-08T16:00:00.000-05:00': 'QUALIFIED', '2023-10-25T14:30:00.000-05:00': 'CLOSING', '2023-08-25T09:00:00.000-05:00': 'QUALIFIED', '2023-09-07T13:00:00.000-05:00': 'QUALIFIED', '2023-08-23T10:00:00.000-05:00': 'QUALIFIED', '2023-09-16T09:00:00.000-05:00': 'PLANNING', '2023-09-12T15:00:00.000-05:00': 'RESCHEDULE', '2023-09-28T13:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-25T17:00:00.000-05:00': 'QUALIFIED', '2023-08-03T17:30:00.000-05:00': 'NOT QUALIFIED', '2023-09-30T11:00:00.000-05:00': 'QUALIFIED', '2023-08-14T16:00:00.000-05:00': 'CLOSING', '2023-11-24T10:00:00.000-06:00': 'PLANNING', '2023-11-08T17:30:00.000-06:00': 'QUALIFIED', '2023-08-08T18:00:00.000-05:00': 'RESCHEDULE', '2023-10-27T13:00:00.000-05:00': 'QUALIFIED', '2023-10-18T18:00:00.000-05:00': 'QUALIFIED', '2023-08-31T15:00:00.000-05:00': 'QUALIFIED', '2023-10-06T11:00:00.000-05:00': 'QUALIFIED', '2023-09-19T10:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-15T09:00:00.000-05:00': 'QUALIFIED', '2023-09-05T16:00:00.000-05:00': 'QUALIFIED', '2023-10-18T16:00:00.000-05:00': 'PLANNING', '2023-10-16T17:00:00.000-05:00': 'CANCELLED', '2023-10-23T15:00:00.000-05:00': 'PLANNING', '2023-09-11T13:00:00.000-05:00': 'QUALIFIED', '2023-12-05T10:00:00.000-06:00': 'QUALIFIED', '2023-10-06T18:00:00.000-05:00': 'QUALIFIED', '2023-11-03T13:00:00.000-05:00': 'QUALIFIED', '2023-09-08T13:00:00.000-05:00': 'QUALIFIED', '2023-09-29T11:00:00.000-05:00': 'QUALIFIED', '2023-12-19T12:00:00.000-06:00': 'QUALIFIED', '2023-09-12T17:00:00.000-05:00': 'QUALIFIED', '2023-09-14T17:00:00.000-05:00': 'PLANNING', '2023-11-17T17:00:00.000-06:00': 'QUALIFIED', '2023-09-13T11:00:00.000-05:00': 'QUALIFIED', '2023-12-16T09:00:00.000-06:00': 'QUALIFIED', '2023-10-17T10:00:00.000-05:00': 'QUALIFIED', '2023-10-27T15:30:00.000-05:00': 'CLOSING', '2023-09-11T17:00:00.000-05:00': 'QUALIFIED', '2023-08-15T16:30:00.000-05:00': 'CLOSING', '2023-09-22T11:30:00.000-05:00': 'QUALIFIED', '2023-08-17T17:00:00.000-05:00': 'QUALIFIED', '2023-11-06T17:00:00.000-06:00': 'CANCELLED', '2023-10-27T09:00:00.000-05:00': 'RESCHEDULE', '2023-12-05T20:00:00.000-06:00': 'PLANNING', '2023-09-15T12:00:00.000-05:00': 'RESCHEDULE', '2023-10-20T17:00:00.000-05:00': 'NOT QUALIFIED', '2023-10-07T12:00:00.000-05:00': 'QUALIFIED', '2023-10-16T13:00:00.000-05:00': 'QUALIFIED', '2023-10-20T11:30:00.000-05:00': 'PLANNING', '2023-08-03T14:00:00.000-05:00': 'QUALIFIED', '2023-10-26T14:00:00.000-05:00': 'QUALIFIED', '2023-11-16T14:00:00.000-06:00': 'PLANNING', '2023-09-15T09:00:00.000-05:00': 'QUALIFIED', '2023-12-01T12:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-02T12:00:00.000-05:00': 'QUALIFIED', '2023-09-13T15:00:00.000-05:00': 'QUALIFIED', '2023-12-02T11:00:00.000-06:00': 'QUALIFIED', '2023-11-04T10:00:00.000-05:00': 'QUALIFIED', '2023-11-03T17:00:00.000-05:00': 'PLANNING', '2023-12-05T18:00:00.000-06:00': 'NOT QUALIFIED', '2023-10-12T17:30:00.000-05:00': 'QUALIFIED', '2023-08-02T14:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-22T16:30:00.000-05:00': 'NOT QUALIFIED', '2023-12-04T09:00:00.000-06:00': 'QUALIFIED', '2023-08-14T18:00:00.000-05:00': 'QUALIFIED', '2023-10-04T14:00:00.000-05:00': 'QUALIFIED', '2023-10-19T09:30:00.000-05:00': 'QUALIFIED', '2023-09-28T11:00:00.000-05:00': 'QUALIFIED', '2023-09-18T17:00:00.000-05:00': 'CANCELLED', '2023-08-30T13:00:00.000-05:00': 'PLANNING', '2023-08-29T16:00:00.000-05:00': 'QUALIFIED', '2023-09-05T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-10-28T16:00:00.000-05:00': 'QUALIFIED', '2023-09-23T14:00:00.000-05:00': 'RESCHEDULE', '2023-12-08T08:00:00.000-06:00': 'QUALIFIED', '2023-10-17T15:00:00.000-05:00': 'TURN', '2023-08-04T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-04T11:00:00.000-05:00': 'QUALIFIED', '2023-09-08T10:00:00.000-05:00': 'QUALIFIED', '2023-07-31T17:00:00.000-05:00': 'QUALIFIED', '2023-09-21T11:00:00.000-05:00': 'QUALIFIED', '2023-09-22T17:00:00.000-05:00': 'QUALIFIED', '2023-12-19T14:00:00.000-06:00': 'CANCELLED', '2023-08-22T17:00:00.000-05:00': 'QUALIFIED', '2023-12-05T15:30:00.000-06:00': 'PLANNING', '2023-11-20T16:00:00.000-06:00': 'TURN', '2023-11-17T09:30:00.000-06:00': 'TURN', '2023-08-23T12:00:00.000-05:00': 'QUALIFIED', '2023-08-02T16:00:00.000-05:00': 'QUALIFIED', '2023-10-28T14:30:00.000-05:00': 'QUALIFIED', '2023-12-12T10:30:00.000-06:00': 'PLANNING', '2023-11-06T09:00:00.000-06:00': 'QUALIFIED', '2023-10-05T08:00:00.000-05:00': 'QUALIFIED', '2023-11-29T17:00:00.000-06:00': 'QUALIFIED', '2023-12-12T18:00:00.000-06:00': 'QUALIFIED', '2023-09-21T13:00:00.000-05:00': 'QUALIFIED', '2023-09-16T10:00:00.000-05:00': 
-'QUALIFIED', '2023-11-27T16:00:00.000-06:00': 'QUALIFIED', '2023-08-09T11:00:00.000-05:00': 'QUALIFIED', '2023-08-01T14:00:00.000-05:00': 'QUALIFIED', '2023-11-03T14:00:00.000-05:00': 'QUALIFIED', '2023-08-17T09:00:00.000-05:00': 'QUALIFIED', '2023-09-09T09:00:00.000-05:00': 'QUALIFIED', '2023-08-25T10:45:00.000-05:00': 'QUALIFIED', '2023-11-15T13:00:00.000-06:00': 'PLANNING', '2023-08-08T15:00:00.000-05:00': 'QUALIFIED', '2023-10-20T10:30:00.000-05:00': 'CLOSING', '2023-09-16T14:00:00.000-05:00': 'NOT QUALIFIED', '2023-11-18T17:00:00.000-06:00': 'QUALIFIED', '2023-12-01T16:00:00.000-06:00': 'QUALIFIED', '2023-08-11T15:00:00.000-05:00': 'QUALIFIED', '2023-09-01T13:00:00.000-05:00': 'CANCELLED', '2023-10-02T09:00:00.000-05:00': 'QUALIFIED', '2023-09-27T10:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-30T09:00:00.000-05:00': 'QUALIFIED', '2023-10-27T12:00:00.000-05:00': 'RESCHEDULE', '2023-09-23T15:00:00.000-05:00': 'CANCELLED', '2023-08-18T16:00:00.000-05:00': 'QUALIFIED', '2023-11-22T08:30:00.000-06:00': 'QUALIFIED', '2023-11-22T11:30:00.000-06:00': 'PLANNING', '2023-09-12T14:00:00.000-05:00': 'QUALIFIED', '2023-12-06T18:00:00.000-06:00': 'QUALIFIED', '2023-08-24T13:00:00.000-05:00': 'QUALIFIED', '2023-11-17T13:00:00.000-06:00': 'PLANNING', '2023-09-02T15:00:00.000-05:00': 'QUALIFIED', '2023-11-01T12:00:00.000-05:00': 'RESCHEDULE', '2023-10-25T09:00:00.000-05:00': 'QUALIFIED', '2023-10-16T10:00:00.000-05:00': 'QUALIFIED', '2023-10-31T08:00:00.000-05:00': 'QUALIFIED', '2023-11-04T12:00:00.000-05:00': 'CANCELLED', '2023-10-23T08:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-05T14:00:00.000-05:00': 'NOT QUALIFIED', '2023-12-01T13:00:00.000-06:00': 'PLANNING', '2023-08-22T10:00:00.000-05:00': 'QUALIFIED', '2023-11-30T13:00:00.000-06:00': 'CLOSING', '2023-12-06T11:00:00.000-06:00': 'QUALIFIED', '2023-08-10T16:00:00.000-05:00': 'QUALIFIED', 
-'2023-10-24T18:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-11T10:00:00.000-05:00': 'QUALIFIED', '2023-12-15T11:00:00.000-06:00': 'QUALIFIED', '2023-10-04T13:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-20T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-12-06T13:00:00.000-06:00': 'QUALIFIED', '2023-12-04T08:00:00.000-06:00': 'PLANNING', '2023-11-18T12:30:00.000-06:00': 'PLANNING', '2023-09-07T09:00:00.000-05:00': 'QUALIFIED', '2023-11-03T10:30:00.000-05:00': 'PLANNING', '2023-11-18T09:00:00.000-06:00': 'QUALIFIED', '2023-09-08T16:30:00.000-05:00': 'NOT QUALIFIED', '2023-12-18T10:00:00.000-06:00': 'QUALIFIED', '2023-10-06T14:00:00.000-05:00': 'CLOSING', '2023-08-22T09:00:00.000-05:00': 'QUALIFIED', '2023-08-05T09:00:00.000-05:00': 'QUALIFIED', '2023-08-16T16:00:00.000-05:00': 'QUALIFIED', '2023-07-31T11:00:00.000-05:00': 'QUALIFIED', '2023-09-19T17:00:00.000-05:00': 'QUALIFIED', '2023-08-16T10:00:00.000-05:00': 'NOT QUALIFIED', '2023-10-05T16:00:00.000-05:00': 'QUALIFIED', '2023-09-13T17:00:00.000-05:00': 'QUALIFIED', '2023-11-30T16:00:00.000-06:00': 'PLANNING', '2023-08-09T16:00:00.000-05:00': 'QUALIFIED', '2023-10-21T09:00:00.000-05:00': 'NOT QUALIFIED'}, 'MORGAN WEST': {'2024-01-03T16:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-30T23:59:00.000-03:00': 'QUALIFIED', '2023-12-27T09:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-22T10:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-21T13:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-01T10:00:00.000-06:00': 'NOT QUALIFIED', '2023-09-25T13:00:00.000-05:00': 'QUALIFIED', '2023-12-08T09:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-14T16:30:00.000-06:00': 'NOT QUALIFIED', '2023-08-18T14:00:00.000-05:00': 'CLOSING', '2023-12-13T11:00:00.000-06:00': 'QUALIFIED', '2023-08-30T11:00:00.000-05:00': 'NOT QUALIFIED', '2023-12-11T12:00:00.000-06:00': 'QUALIFIED', '2023-08-17T14:00:00.000-05:00': 'QUALIFIED', '2023-10-25T09:00:00.000-05:00': 'TURN', '2023-09-15T14:00:00.000-05:00': 'QUALIFIED', '2023-08-24T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-26T09:00:00.000-05:00': 'QUALIFIED', '2023-09-05T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-28T13:00:00.000-05:00': 'QUALIFIED', '2023-11-06T15:00:00.000-06:00': 'NOT QUALIFIED', '2023-09-21T09:00:00.000-05:00': 'QUALIFIED', '2023-09-09T14:00:00.000-05:00': 'NOT QUALIFIED', '2023-10-04T10:00:00.000-05:00': 'QUALIFIED', '2023-11-02T09:00:00.000-05:00': 'QUALIFIED', '2023-10-05T12:00:00.000-05:00': 'TURN', '2023-09-14T17:00:00.000-05:00': 'QUALIFIED', '2023-10-11T09:00:00.000-05:00': 'QUALIFIED', '2023-08-29T12:00:00.000-05:00': 'QUALIFIED', '2023-12-06T10:00:00.000-06:00': 'QUALIFIED', '2023-08-16T09:00:00.000-05:00': 'QUALIFIED', '2023-09-02T10:00:00.000-05:00': 'QUALIFIED', '2023-10-20T10:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-15T10:00:00.000-05:00': 'QUALIFIED', '2023-10-11T08:00:00.000-05:00': 'QUALIFIED', '2023-08-16T13:00:00.000-05:00': 'QUALIFIED', '2023-09-08T09:00:00.000-05:00': 'QUALIFIED', '2023-10-09T13:00:00.000-05:00': 'QUALIFIED', '2023-10-10T12:00:00.000-04:00': 'TURN', '2023-09-06T09:00:00.000-05:00': 'QUALIFIED', '2023-10-26T18:00:00.000-05:00': 'NOT QUALIFIED', '2023-10-16T10:00:00.000-05:00': 'QUALIFIED', '2023-08-14T09:00:00.000-05:00': 'QUALIFIED', '2023-09-11T10:00:00.000-05:00': 'QUALIFIED', '2023-09-20T09:00:00.000-05:00': 'RESCHEDULE', '2023-11-08T10:00:00.000-06:00': 'PLANNING', '2023-11-17T09:00:00.000-06:00': 'QUALIFIED', '2023-08-15T10:00:00.000-05:00': 'QUALIFIED', '2023-09-19T12:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-14T12:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-07T10:00:00.000-05:00': 'QUALIFIED', '2023-09-02T11:00:00.000-05:00': 'QUALIFIED', '2023-12-19T09:00:00.000-06:00': 'QUALIFIED', '2023-11-22T09:00:00.000-06:00': 'QUALIFIED', '2023-10-07T09:00:00.000-05:00': 'QUALIFIED', '2023-09-09T11:00:00.000-05:00': 'QUALIFIED', '2023-08-28T09:00:00.000-05:00': 'QUALIFIED', '2023-10-19T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-23T14:00:00.000-05:00': 'CANCELLED', '2023-12-15T09:00:00.000-06:00': 'QUALIFIED', '2023-09-05T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-10-11T11:00:00.000-05:00': 'NOT QUALIFIED', '2023-12-11T13:00:00.000-05:00': 'QUALIFIED', '2023-08-17T11:00:00.000-05:00': 'QUALIFIED', '2023-08-22T15:00:00.000-05:00': 'QUALIFIED', '2023-09-18T11:00:00.000-05:00': 'QUALIFIED', '2023-11-10T09:00:00.000-06:00': 'QUALIFIED', '2023-11-15T09:00:00.000-06:00': 'QUALIFIED', '2024-01-03T10:00:00.000-06:00': 'QUALIFIED', '2023-12-20T13:00:00.000-06:00': 'NOT QUALIFIED', '2023-09-01T11:00:00.000-05:00': 'CANCELLED', '2023-11-28T12:00:00.000-06:00': 'QUALIFIED', '2023-09-11T09:00:00.000-05:00': 'QUALIFIED', '2023-12-02T09:00:00.000-06:00': 'NOT QUALIFIED', '2023-09-14T16:00:00.000-05:00': 'QUALIFIED', '2023-09-05T14:00:00.000-05:00': 'QUALIFIED', '2023-09-02T09:00:00.000-05:00': 'QUALIFIED', '2023-12-02T10:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-16T10:00:00.000-06:00': 'QUALIFIED', '2023-09-02T14:00:00.000-05:00': 'QUALIFIED', '2023-12-05T09:00:00.000-06:00': 'QUALIFIED', '2023-09-01T15:00:00.000-05:00': 'CANCELLED', '2023-11-07T10:00:00.000-06:00': 'RESCHEDULE', '2023-10-27T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-23T12:00:00.000-05:00': 'QUALIFIED', '2023-08-23T16:00:00.000-05:00': 'QUALIFIED', '2023-12-01T11:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-29T14:00:00.000-06:00': 'QUALIFIED'}, 'EDUARDO': {'2023-12-27T12:00:00.000-06:00': 'QUALIFIED', '2023-11-11T10:00:00.000-06:00': 'QUALIFIED', '2023-12-05T12:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-09T13:00:00.000-06:00': 'QUALIFIED', '2023-11-27T14:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-27T16:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-27T10:00:00.000-06:00': 'CANCELLED', '2023-10-27T14:00:00.000-05:00': 'CANCELLED', '2023-12-11T10:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-01T17:00:00.000-06:00': 'CANCELLED', '2023-12-05T09:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-11T14:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-08T13:00:00.000-06:00': 'QUALIFIED', '2023-09-25T09:00:00.000-05:00': 'QUALIFIED', '2023-12-04T11:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-18T09:00:00.000-06:00': 'QUALIFIED', '2023-11-11T17:00:00.000-06:00': 'CANCELLED', '2023-11-13T10:00:00.000-06:00': 'PLANNING', '2023-12-06T12:00:00.000-06:00': 'CANCELLED', '2023-12-13T16:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-23T14:00:00.000-06:00': 'RESCHEDULE', '2023-11-21T09:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-14T15:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-28T18:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-17T14:00:00.000-06:00': 'PLANNING', '2023-11-07T08:00:00.000-06:00': 'CLOSING', '2023-12-04T09:00:00.000-06:00': 'QUALIFIED', '2023-11-28T15:00:00.000-06:00': 'CANCELLED', '2023-12-05T15:00:00.000-06:00': 'NOT QUALIFIED', '2023-12-06T11:00:00.000-06:00': 'CANCELLED'}, 'MORGAN': {'2023-08-03T13:00:00.000-05:00': 'QUALIFIED', '2023-05-16T14:00:00.000-05:00': 'QUALIFIED', '2023-08-11T12:00:00.000-05:00': 'CANCELLED', '2023-05-10T15:30:00.000-05:00': 'QUALIFIED', '2023-08-10T11:00:00.000-05:00': 'CANCELLED', '2023-07-19T11:00:00.000-05:00': 'QUALIFIED', '2023-06-19T14:00:00.000-05:00': 'QUALIFIED', '2023-06-21T12:00:00.000-05:00': 'QUALIFIED', '2023-05-17T14:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-26T09:00:00.000-05:00': 'QUALIFIED', '2023-07-25T09:00:00.000-05:00': 'QUALIFIED', '2023-05-12T09:00:00.000-05:00': 'QUALIFIED', '2023-06-06T08:00:00.000-05:00': 'QUALIFIED', '2023-07-19T13:00:00.000-05:00': 'QUALIFIED', '2023-07-27T09:00:00.000-05:00': 'QUALIFIED', '2023-06-28T09:00:00.000-05:00': 'CANCELLED', '2023-06-21T14:00:00.000-05:00': 'QUALIFIED', '2023-07-20T09:00:00.000-05:00': 'QUALIFIED', '2023-05-16T10:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-12T15:00:00.000-05:00': 'CANCELLED', '2023-05-13T10:00:00.000-05:00': 'QUALIFIED', '2023-05-10T10:00:00.000-05:00': 'QUALIFIED', '2023-07-12T09:00:00.000-05:00': 'QUALIFIED', '2023-05-25T16:00:00.000-05:00': 'QUALIFIED', '2023-07-21T09:00:00.000-05:00': 'CANCELLED', '2023-06-01T09:00:00.000-05:00': 'QUALIFIED', '2023-05-11T09:00:00.000-05:00': 'QUALIFIED', '2023-05-23T09:00:00.000-05:00': 'CANCELLED', '2023-06-26T11:00:00.000-05:00': 'CANCELLED', '2023-05-30T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-29T11:00:00.000-05:00': 'RESCHEDULE', '2023-08-09T13:00:00.000-05:00': 'QUALIFIED', '2023-07-14T10:00:00.000-05:00': 'QUALIFIED', '2023-07-18T08:00:00.000-05:00': 'CANCELLED', '2023-08-07T16:00:00.000-05:00': 'CANCELLED', '2023-08-02T09:00:00.000-05:00': 'QUALIFIED', '2023-07-10T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-06-13T13:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-26T14:00:00.000-05:00': 'QUALIFIED', '2023-05-11T16:00:00.000-05:00': 'CANCELLED', '2023-05-24T13:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-20T16:00:00.000-05:00': 'QUALIFIED', '2023-08-03T16:00:00.000-05:00': 'QUALIFIED', '2023-07-21T08:30:00.000-05:00': 'QUALIFIED', '2023-05-23T16:00:00.000-05:00': 'CANCELLED', '2023-07-24T11:00:00.000-05:00': 'QUALIFIED', '2023-07-17T15:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-09T11:00:00.000-05:00': 'QUALIFIED', '2023-06-29T14:00:00.000-05:00': 'QUALIFIED', '2023-07-31T11:00:00.000-05:00': 'QUALIFIED', '2023-05-12T14:00:00.000-05:00': 'QUALIFIED', '2023-06-14T14:00:00.000-05:00': 'QUALIFIED', '2023-05-25T13:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-24T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-06-04T13:00:00.000-07:00': 'RESCHEDULE', '2023-05-30T14:00:00.000-05:00': 'RESCHEDULE', '2023-08-09T10:00:00.000-05:00': 'QUALIFIED', '2023-08-03T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-05-18T14:00:00.000-05:00': 'RESCHEDULE', '2023-07-17T11:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-12T11:00:00.000-05:00': 'QUALIFIED', '2023-06-16T10:00:00.000-05:00': 'CANCELLED', '2023-05-10T16:00:00.000-05:00': 'QUALIFIED', '2023-08-01T16:00:00.000-05:00': 'QUALIFIED', '2023-07-28T09:00:00.000-05:00': 'QUALIFIED', '2023-06-21T09:00:00.000-05:00': 'QUALIFIED', '2023-06-01T13:00:00.000-07:00': 'QUALIFIED', '2023-07-20T12:00:00.000-05:00': 'QUALIFIED', '2023-05-30T11:30:00.000-05:00': 'NOT QUALIFIED', '2023-05-24T11:30:00.000-07:00': 'QUALIFIED', '2023-06-20T11:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-17T09:00:00.000-05:00': 'QUALIFIED', '2023-06-17T10:00:00.000-05:00': 'QUALIFIED', '2023-08-01T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-25T12:00:00.000-05:00': 'QUALIFIED', '2023-07-10T11:00:00.000-05:00': 'QUALIFIED', '2023-05-17T16:00:00.000-05:00': 'CANCELLED', '2023-05-30T12:00:00.000-05:00': 'CANCELLED', '2023-06-22T12:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-25T11:00:00.000-05:00': 'CANCELLED', '2023-06-23T09:00:00.000-05:00': 'QUALIFIED', '2023-07-05T11:00:00.000-05:00': 'QUALIFIED', '2023-06-26T14:00:00.000-05:00': 'CANCELLED', '2023-06-16T09:00:00.000-05:00': 'PLANNING', '2023-05-17T09:00:00.000-05:00': 'QUALIFIED', '2023-07-06T09:00:00.000-05:00': 'QUALIFIED', '2023-06-20T12:00:00.000-05:00': 'QUALIFIED', '2023-05-19T09:00:00.000-07:00': 'RESCHEDULE', '2023-08-10T16:00:00.000-05:00': 'QUALIFIED', '2023-05-09T12:00:00.000-05:00': 'CANCELLED', '2023-05-15T09:00:00.000-05:00': 'QUALIFIED', '2023-07-12': 'NOT QUALIFIED', '2023-05-26T16:00:00.000-07:00': 'NOT QUALIFIED'}, 'JONAS': {'2023-05-08T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-05-19T12:00:00.000-07:00': 'CANCELLED', '2023-08-21T13:00:00.000-05:00': 'CANCELLED', '2023-05-24T16:00:00.000-05:00': 'CANCELLED', '2023-06-20T14:00:00.000-05:00': 'NOT QUALIFIED', '2023-05-17T09:00:00.000-07:00': 'CANCELLED', '2023-06-16T14:00:00.000-05:00': 'NOT QUALIFIED', '2023-06-23T12:00:00.000-05:00': 'NOT QUALIFIED', '2023-06-15T10:00:00.000-05:00': 'NOT QUALIFIED', '2023-05-09T10:30:00.000-05:00': 'QUALIFIED', '2023-06-17T12:00:00.000-05:00': 'QUALIFIED', '2023-05-08T14:00:00.000-05:00': 'NOT QUALIFIED', '2023-05-09T15:00:00.000-05:00': 'CANCELLED', '2023-06-15T14:00:00.000-05:00': 'QUALIFIED', '2023-05-08T08:00:00.000-05:00': 'NOT QUALIFIED', '2023-05-08T10:00:00.000-05:00': 'CANCELLED', '2023-09-20T11:00:00.000-05:00': 'QUALIFIED', '2023-06-19T16:30:00.000-05:00': 'RESCHEDULE', '2023-11-14T08:00:00.000-06:00': 'TURN'}, 'ALISON': {'2023-11-28T09:00:00.000-06:00': 'QUALIFIED', '2023-12-13T13:00:00.000-06:00': 'QUALIFIED', '2023-12-04T12:00:00.000-06:00': 'PLANNING', '2023-11-14T10:30:00.000-06:00': 'NOT QUALIFIED', '2023-12-11T12:00:00.000-05:00': 'QUALIFIED', '2023-12-04T15:00:00.000-06:00': 'CANCELLED', '2023-12-12T09:00:00.000-06:00': 'QUALIFIED', '2023-11-17T11:00:00.000-06:00': 'QUALIFIED', '2023-12-19T13:00:00.000-06:00': 'QUALIFIED', '2023-12-09T09:00:00.000-06:00': 'QUALIFIED', '2023-12-22T10:00:00.000-06:00': 'NOT QUALIFIED', '2023-10-10T15:00:00.000-05:00': 'NOT QUALIFIED', '2023-11-04T11:00:00.000-05:00': 'NOT QUALIFIED', '2023-12-16T09:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-30T09:00:00.000-06:00': 'CANCELLED', '2023-11-06T17:00:00.000-06:00': 'QUALIFIED', '2023-11-30T17:30:00.000-06:00': 'NOT QUALIFIED', '2023-10-28T09:00:00.000-05:00': 'QUALIFIED', '2023-11-22T10:00:00.000-06:00': 'QUALIFIED', '2023-12-05T11:00:00.000-06:00': 'QUALIFIED', '2023-11-17T13:00:00.000-06:00': 'QUALIFIED', '2023-10-16T09:00:00.000-05:00': 'QUALIFIED', '2023-10-19T15:00:00.000-05:00': 'NOT QUALIFIED', '2023-10-28T11:00:00.000-05:00': 'QUALIFIED', '2023-11-18T09:00:00.000-06:00': 'RESCHEDULE', '2023-12-11T10:00:00.000-06:00': 'CLOSING', '2023-12-02T09:00:00.000-06:00': 'QUALIFIED', '2023-11-11T09:00:00.000-06:00': 'NOT QUALIFIED', '2023-11-08T09:30:00.000-06:00': 'QUALIFIED', '2023-11-13': 'NOT QUALIFIED', '2023-10-17T12:00:00.000-05:00': 'QUALIFIED', '2023-12-05T14:00:00.000-06:00': 'CANCELLED', '2023-12-06T09:45:00.000-06:00': 'PLANNING', '2023-12-15T10:00:00.000-06:00': 'NOT QUALIFIED'}, 'DYLAN': {'2023-08-22T10:00:00.000-05:00': 'QUALIFIED', '2023-08-03T17:00:00.000-05:00': 'QUALIFIED', '2023-08-18T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-21T10:00:00.000-05:00': 'QUALIFIED', '2023-08-16T10:00:00.000-05:00': 'QUALIFIED', '2023-08-21T14:00:00.000-05:00': 'QUALIFIED', '2023-07-31T09:00:00.000-05:00': 'CANCELLED', '2023-08-24T17:30:00.000-05:00': 'QUALIFIED', '2023-08-11T09:00:00.000-05:00': 'QUALIFIED', '2023-07-31T11:00:00.000-05:00': 'QUALIFIED', '2023-08-23T16:00:00.000-05:00': 'QUALIFIED', '2023-08-04T10:00:00.000-05:00': 'QUALIFIED', '2023-08-02T14:00:00.000-05:00': 'QUALIFIED', '2023-08-17T08:00:00.000-05:00': 'QUALIFIED', '2023-08-22T09:00:00.000-05:00': 'QUALIFIED', '2023-08-15T15:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-01T09:00:00.000-05:00': 'QUALIFIED', '2023-07-26T12:00:00.000-05:00': 'CANCELLED', '2023-08-03T10:00:00.000-05:00': 'QUALIFIED', 
-'2023-08-15T16:30:00.000-05:00': 'QUALIFIED', '2023-08-21T11:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-02T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-17T12:00:00.000-05:00': 'QUALIFIED', '2023-08-01T10:00:00.000-05:00': 'QUALIFIED', '2023-08-25T09:00:00.000-05:00': 'QUALIFIED', '2023-08-01T11:00:00.000-05:00': 'QUALIFIED', '2023-07-27T16:00:00.000-05:00': 'QUALIFIED'}, 'JAY': {'2023-06-12T14:00:00.000-05:00': 'RESCHEDULE', '2023-07-19T14:00:00.000-05:00': 'CANCELLED', '2023-07-28': 'QUALIFIED', '2023-10-17T16:00:00.000-05:00': 'RESCHEDULE', '2023-11-14T08:00:00.000-06:00': 'PLANNING', '2023-09-06T12:00:00.000-05:00': 'QUALIFIED', '2023-09-27T11:00:00.000-05:00': 'CLOSING', '2023-09-11T13:00:00.000-05:00': 'QUALIFIED', '2023-07-26T10:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-07T16:00:00.000-05:00': 'QUALIFIED', '2023-05-31T09:00:00.000-05:00': 'CANCELLED', '2023-07-22T09:00:00.000-05:00': 'QUALIFIED', '2023-09-25T12:30:00.000-05:00': 'QUALIFIED', '2023-06-01T11:00:00.000-05:00': 'RESCHEDULE', '2023-07-15T11:00:00.000-05:00': 'QUALIFIED', '2023-10-20T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-19T15:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-24T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-08-18T08:00:00.000-05:00': 'CLOSING', '2023-09-06T11:00:00.000-05:00': 'QUALIFIED', '2023-06-30T12:00:00.000-05:00': 'NOT QUALIFIED', '2023-06-28T12:00:00.000-05:00': 'CANCELLED', '2023-07-11T11:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-25T10:00:00.000-05:00': 'QUALIFIED', '2023-07-14T15:00:00.000-05:00': 'QUALIFIED', '2023-09-13T09:00:00.000-05:00': 'QUALIFIED', '2023-06-27T11:00:00.000-05:00': 'QUALIFIED', '2023-09-12T13:00:00.000-05:00': 'NOT QUALIFIED', '2023-06-27T16:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-06T12:00:00.000-05:00': 'QUALIFIED', '2023-07-06T14:00:00.000-05:00': 'QUALIFIED', '2023-06-14T09:00:00.000-05:00': 'QUALIFIED', '2023-07-24T12:00:00.000-05:00': 'NOT QUALIFIED', '2023-07-20T16:00:00.000-05:00': 'RESCHEDULE', '2023-07-31T16:00:00.000-05:00': 'QUALIFIED', '2023-09-06T14:00:00.000-05:00': 'QUALIFIED', '2023-06-30T09:00:00.000-05:00': 'NOT QUALIFIED', '2023-09-29T09:00:00.000-05:00': 'QUALIFIED', '2023-07-22T11:00:00.000-05:00': 'NOT QUALIFIED', '2023-06-29T09:00:00.000-05:00': 'QUALIFIED', '2023-07-05T13:00:00.000-05:00': 'QUALIFIED', '2023-09-16T13:00:00.000-05:00': 'QUALIFIED', '2023-07-21T08:00:00.000-05:00': 'QUALIFIED'}, 'unknown': {'2023-12-13T15:00:00.000-06:00': 'QUALIFIED'}, 'MILAGROS': {'2023-06-19T09:00:00.000-05:00': 'PLANNING'}}
+                    result_dict[assigned_to_name][date_start_full] = tag_info['name']
 
-def count_tags_by_month():
-    input_dict = get_sales_meetings_data()
+                except ValueError:
+                    # Handle different date formats if parsing fails
+                    continue
+
+    return dict(result_dict)
+
+def count_tags_by_month(start_year=None, start_month=None, end_year=None, end_month=None):
+    input_dict = get_sales_meetings_data(start_year, start_month, end_year, end_month)
     output_dict = {}
 
     for key, inner_dict in input_dict.items():
@@ -88,47 +93,11 @@ def count_tags_by_month():
 
     return output_dict
 
-def count_tags_last_30_days():
-    input_dict = get_sales_meetings_data()
-    output_dict = {}
-
-    # Obtén la fecha actual
-    current_date = datetime.now()
-
-    for key, inner_dict in input_dict.items():
-        counts = {"QUALIFIED": {}, "NOT QUALIFIED": {}, "CANCELLED": {}, "PLANNING": {}, "CLOSING": {}, "TURN": {}, "RESCHEDULE" : {}}
-
-        for date_str, value in inner_dict.items():
-            # Parsea la fecha de entrada
-            date_object = datetime.fromisoformat(date_str.split(".")[0])
-
-            # Calcula la diferencia de días entre la fecha actual y la fecha de la reunión
-            days_difference = (current_date - date_object).days
-
-            # Si la reunión ocurrió en los últimos 30 días, procesa la información
-            if 0 <= days_difference <= 30:
-                # Formatea la fecha como "aaaa-mm"
-                formatted_date = date_object.strftime("%Y-%m")
-
-                # Actualiza el recuento para la calificación y el mes correspondientes
-                if value not in counts:
-                    counts[value] = {}
-
-                counts[value][formatted_date] = counts[value].get(formatted_date, 0) + 1
-
-        # Actualiza el diccionario externo con el diccionario de recuento
-        output_dict[key] = counts
-
-    return output_dict
-
-def calculate_stats():
+def calculate_stats(start_year=None, start_month=None, end_year=None, end_month=None):
     result_dict = {}
 
-    #counts_by_month = count_tags_by_month()
-
-    counts_by_month = {'MARK': {'QUALIFIED': {'2024-01': 6, '2023-12': 21, '2023-08': 34, '2023-11': 12, '2023-09': 27, '2023-10': 19, '2023-07': 2}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 3, '2023-11': 1, '2023-10': 6, '2023-08': 5, '2023-09': 9}, 'CANCELLED': {'2023-10': 2, '2023-11': 2, '2023-09': 3, '2023-12': 1}, 'PLANNING': {'2024-01': 2, '2023-12': 12, '2023-11': 10, '2023-09': 3, '2023-10': 4, '2023-08': 1}, 'CLOSING': {'2023-12': 3, '2023-10': 4, '2023-08': 2, '2023-11': 1}, 'TURN': {'2023-12': 1, '2023-11': 3, '2023-10': 1}, 'RESCHEDULE': {'2023-12': 1, '2023-09': 3, '2023-08': 1, '2023-10': 2, '2023-11': 1}}, 'MORGAN WEST': {'QUALIFIED': {'2023-11': 9, '2023-09': 20, '2023-12': 7, '2023-08': 11, '2023-10': 6, '2024-01': 1}, 'NOT QUALIFIED': {'2024-01': 1, '2023-12': 10, '2023-08': 3, '2023-09': 4, '2023-11': 1, '2023-10': 5}, 'CANCELLED': {'2023-08': 1, '2023-09': 2}, 'PLANNING': {'2023-11': 1}, 'CLOSING': {'2023-08': 1}, 'TURN': {'2023-10': 3}, 'RESCHEDULE': {'2023-09': 1, '2023-11': 1}}, 'EDUARDO': {'QUALIFIED': {'2023-12': 
-4, '2023-11': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-12': 8, '2023-11': 4}, 'CANCELLED': {'2023-11': 3, '2023-10': 1, '2023-12': 3}, 'PLANNING': {'2023-11': 2}, 'CLOSING': {'2023-11': 1}, 'TURN': {}, 'RESCHEDULE': {'2023-12': 1}}, 'MORGAN': {'QUALIFIED': {'2023-08': 8, '2023-05': 12, '2023-07': 21, '2023-06': 12}, 'NOT QUALIFIED': {'2023-05': 7, '2023-07': 5, '2023-06': 3, '2023-08': 2}, 'CANCELLED': {'2023-08': 3, '2023-06': 4, '2023-07': 4, '2023-05': 6}, 'PLANNING': {'2023-06': 1}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {'2023-07': 1, '2023-06': 1, '2023-05': 3}}, 'JONAS': {'QUALIFIED': {'2023-05': 1, '2023-06': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-05': 3, '2023-06': 4}, 'CANCELLED': {'2023-05': 5, '2023-08': 1}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {'2023-11': 1}, 'RESCHEDULE': {'2023-06': 1}}, 'ALISON': {'QUALIFIED': {'2023-11': 6, '2023-12': 7, '2023-10': 4}, 'NOT QUALIFIED': {'2023-11': 5, '2023-12': 3, '2023-10': 2}, 'CANCELLED': {'2023-12': 2, '2023-11': 1}, 'PLANNING': {'2023-12': 2}, 'CLOSING': {'2023-12': 1}, 'TURN': {}, 'RESCHEDULE': {'2023-11': 1}}, 'DYLAN': {'QUALIFIED': {'2023-08': 18, '2023-07': 2, '2023-09': 1}, 'NOT QUALIFIED': {'2023-08': 4}, 'CANCELLED': {'2023-07': 2}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'JAY': {'QUALIFIED': {'2023-07': 9, '2023-09': 9, '2023-08': 1, '2023-06': 3}, 'NOT QUALIFIED': {'2023-07': 5, '2023-10': 1, '2023-08': 1, '2023-06': 3, '2023-09': 1}, 'CANCELLED': {'2023-07': 1, '2023-05': 1, '2023-06': 1}, 'PLANNING': {'2023-11': 1}, 'CLOSING': {'2023-09': 1, '2023-08': 1}, 'TURN': {}, 'RESCHEDULE': {'2023-06': 2, '2023-10': 1, '2023-07': 1}}, 'unknown': {'QUALIFIED': {'2023-12': 1}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}, 'MILAGROS': {'QUALIFIED': {}, 'NOT QUALIFIED': {}, 'CANCELLED': {}, 'PLANNING': {'2023-06': 1}, 'CLOSING': {}, 'TURN': {}, 'RESCHEDULE': {}}}
-
+    counts_by_month = count_tags_by_month(start_year, start_month, end_year, end_month)
+    
     for key, counts in counts_by_month.items():
         qualifies = sum(counts.get('QUALIFIED', {}).values())
         not_qualifies = sum(counts.get('NOT QUALIFIED', {}).values())
@@ -168,6 +137,40 @@ def calculate_stats():
         }
 
     return result_dict
+
+
+def count_tags_last_30_days():
+    input_dict = get_sales_meetings_data()
+    output_dict = {}
+
+    # Obtén la fecha actual
+    current_date = datetime.now()
+
+    for key, inner_dict in input_dict.items():
+        counts = {"QUALIFIED": {}, "NOT QUALIFIED": {}, "CANCELLED": {}, "PLANNING": {}, "CLOSING": {}, "TURN": {}, "RESCHEDULE" : {}}
+
+        for date_str, value in inner_dict.items():
+            # Parsea la fecha de entrada
+            date_object = datetime.fromisoformat(date_str.split(".")[0])
+
+            # Calcula la diferencia de días entre la fecha actual y la fecha de la reunión
+            days_difference = (current_date - date_object).days
+
+            # Si la reunión ocurrió en los últimos 30 días, procesa la información
+            if 0 <= days_difference <= 30:
+                # Formatea la fecha como "aaaa-mm"
+                formatted_date = date_object.strftime("%Y-%m")
+
+                # Actualiza el recuento para la calificación y el mes correspondientes
+                if value not in counts:
+                    counts[value] = {}
+
+                counts[value][formatted_date] = counts[value].get(formatted_date, 0) + 1
+
+        # Actualiza el diccionario externo con el diccionario de recuento
+        output_dict[key] = counts
+
+    return output_dict
 
 def calculate_stats_last_30_days():
     result_dict = {}
@@ -246,71 +249,23 @@ def aggregate_not_qualified_by_month():
     return sorted_result
 
 
-# by month
-def filter_stats_by_month(stats_data, selected_month):
-    filtered_stats_data = {}
-    for salesperson, stats in stats_data.items():
-        month_goal = stats['month_goal']
-        month_goal_qualifies_amount = stats['month_goal_qualifies_amount']
-        total_qualifies = stats['total_qualifies']
-        total_not_qualifies = stats['total_not_qualifies']
-        conversion_rate = stats['conversion_rate']
-        not_qualifies_rate = stats['not_qualifies_rate']
-
-        if month_goal and month_goal.startswith(selected_month):
-            filtered_stats_data[salesperson] = {                
-                'Total Qualifies': total_qualifies,
-                'Total Not Qualifies': total_not_qualifies,
-                'Month Goal': month_goal,
-                'Month Goal Qualifies Amount': month_goal_qualifies_amount,
-                'Conversion Rate': f"{conversion_rate:.2%}",
-                'Not Qualifies Rate': f"{not_qualifies_rate:.2%}"
-            }
-
-    return filtered_stats_data
-
-# by range
-def filter_stats_by_range(stats_data, start_year, start_month, end_year, end_month):
-    filtered_stats_data = {}
-    for salesperson, stats in stats_data.items():
-        month_goal = stats['month_goal']
-        month_goal_qualifies_amount = stats['month_goal_qualifies_amount']
-        total_qualifies = stats['total_qualifies']
-        total_not_qualifies = stats['total_not_qualifies']
-        conversion_rate = stats['conversion_rate']
-        not_qualifies_rate = stats['not_qualifies_rate']
-
-        if month_goal:
-            goal_year, goal_month = map(int, month_goal.split('-'))
-
-            # Adaptar el formato de mes y año a 'YYYY/MM'
-            formatted_goal_month = f"{goal_year}/{goal_month:02d}"
-
-            formatted_start_month = f"{start_year}/{start_month:02d}"
-            formatted_end_month = f"{end_year}/{end_month:02d}"
-
-            if formatted_start_month <= formatted_goal_month <= formatted_end_month:
-                filtered_stats_data[salesperson] = {
-                    'Month Goal': month_goal,
-                    'Month Goal Qualifies Amount': month_goal_qualifies_amount,
-                    'Total Qualifies': total_qualifies,
-                    'Total Not Qualifies': total_not_qualifies,
-                    'Conversion Rate': f"{conversion_rate:.2%}",
-                    'Not Qualifies Rate': f"{not_qualifies_rate:.2%}"
-                }
-
-    return filtered_stats_data
-
-
 
 # Routes
 @app.route('/')
-def main_menu():
-    return render_template('main_menu.html')
-
-@app.route('/get_stats')
 def get_stats():
-    stats_data = calculate_stats()
+    start_year = request.args.get('start_year', None)
+    start_month = request.args.get('start_month', None)
+    end_year = request.args.get('end_year', None)
+    end_month = request.args.get('end_month', None)
+
+    # Convertir a int o manejar None según sea necesario
+    start_year = int(start_year) if start_year else None
+    start_month = int(start_month) if start_month else None
+    end_year = int(end_year) if end_year else None
+    end_month = int(end_month) if end_month else None
+
+    stats_data = calculate_stats(start_year=start_year, start_month=start_month, end_year=end_year, end_month=end_month)
+
     stats_data_last_30_days = calculate_stats_last_30_days()
     qualified_by_month = aggregate_qualified_by_month()
     not_qualified_by_month = aggregate_not_qualified_by_month()
@@ -448,40 +403,6 @@ def get_stats():
 
     return render_template('index.html', img_base64_total_qualifies=img_base64_total_qualifies, img_base64_last_30_days = img_base64_last_30_days, img_base64=img_base64, summary_data=summary_data)
 
-@app.route('/select_month', methods=['GET', 'POST'])
-def select_month():
-    if request.method == 'POST':
-        selected_year = request.form['year']
-        selected_month = request.form['month']
-        selected_month_year = f"{selected_year}-{selected_month}"
-        return redirect(url_for('show_selected_month', selected_month=selected_month_year))
-    return render_template('select_month.html')
-
-@app.route('/show_selected_month/<selected_month>')
-def show_selected_month(selected_month):
-    stats_data = calculate_stats()
-    filtered_stats_data = filter_stats_by_month(stats_data, selected_month)
-
-    return render_template('selected_month.html', selected_month=selected_month, filtered_stats_data=filtered_stats_data)
-
-@app.route('/select_range', methods=['GET', 'POST'])
-def select_range():
-    if request.method == 'POST':
-        start_year = request.form['start_year']
-        start_month = request.form['start_month']
-        end_year = request.form['end_year']
-        end_month = request.form['end_month']
-
-        return redirect(f'/show_selected_range/{start_year}/{start_month}-{end_year}/{end_month}')
-
-    return render_template('select_range.html')
-
-@app.route('/show_selected_range/<int:selected_year_first>/<int:selected_month_first>-<int:selected_year_second>/<int:selected_month_second>')
-def show_selected_range(selected_year_first, selected_month_first, selected_year_second, selected_month_second):
-    stats_data = calculate_stats()
-    filtered_stats_data = filter_stats_by_range(stats_data, selected_year_first, selected_month_first, selected_year_second, selected_month_second)
-    selected_range = f"{selected_year_first}/{selected_month_first}-to-{selected_year_second}/{selected_month_second}"
-    return render_template('show_selected_range.html', selected_range=selected_range, filtered_stats_data=filtered_stats_data)
 
 
 if __name__ == '__main__':

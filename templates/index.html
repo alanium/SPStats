@@ -8,9 +8,45 @@
 </head>
 <body>
     <div class="container">
-        <form method="GET" action="{{ url_for('main_menu') }}">
-            <button class="back-button" type="submit">Back</button>
-        </form>
+
+        <div class="filters">
+            <label for="start-year">Start Year:</label>
+            <select id="start-year" name="start-year">
+                <!-- Add options for start year -->
+                {% for year in range(2020, 2030) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="start-month">Start Month:</label>
+            <select id="start-month" name="start-month">
+                <!-- Add options for start month -->
+                {% for month in range(1, 13) %}
+                    <option value="{{ month }}">{{ month }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="end-year">End Year:</label>
+            <select id="end-year" name="end-year">
+                <!-- Add options for end year -->
+                {% for year in range(2020, 2030) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="end-month">End Month:</label>
+            <select id="end-month" name="end-month">
+                <!-- Add options for end month -->
+                {% for month in range(1, 13) %}
+                    <option value="{{ month }}">{{ month }}</option>
+                {% endfor %}
+            </select>
+
+            <button onclick="resetFilters()">Reset</button>
+            <button onclick="applyFilters()">Filtrar</button>
+        </div>
+
+
 
         <div class="chart-container">
             <div class="chart-circular">
@@ -54,12 +90,30 @@
 
         </div>
         
-        
-    
     <div class="generic-chart">
         <img src="{{ img_base64 }}" alt="Qualified and Not Qualified">
     </div>
     
     </div>
+
+    <script>
+        function resetFilters() {
+            document.getElementById("start-year").value = "";
+            document.getElementById("start-month").value = "";
+            document.getElementById("end-year").value = "";
+            document.getElementById("end-month").value = "";
+        }
+    
+        function applyFilters() {
+            var startYear = document.getElementById("start-year").value;
+            var startMonth = document.getElementById("start-month").value;
+            var endYear = document.getElementById("end-year").value;
+            var endMonth = document.getElementById("end-month").value;
+    
+            // Redirect to the updated stats URL
+            window.location.href = "/?start_year=" + startYear + "&start_month=" + startMonth + "&end_year=" + endYear + "&end_month=" + endMonth;
+        }
+    </script>
+    
 </body>
 </html>
