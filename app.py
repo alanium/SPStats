@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect,url_for
 from flask_caching import Cache
+
 import json
 from collections import defaultdict
 from datetime import datetime
@@ -17,7 +18,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'AOHDNBIAAI189SD!A1'
 
 # Configuración de la caché
-cache = Cache(app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': 86400})  # 604800 segundos = 1 semana
+cache = Cache(app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': 86400})
 
 
 with open('config.json', 'r') as config_file:
@@ -42,8 +43,7 @@ sales_persons = {
 # Controller
 @cache.cached()
 def get_data():
-    entries = data.read(SP)
-    return entries
+    return data.read(SP)
 
 def get_sales_meetings_data(start_year=None, start_month=None, end_year=None, end_month=None):
     entries = get_data()
@@ -147,6 +147,7 @@ def calculate_stats(start_year=None, start_month=None, end_year=None, end_month=
         }
 
     return result_dict
+
 
 
 def count_tags_last_30_days():
@@ -414,7 +415,8 @@ def get_stats():
     return render_template('index.html', img_base64_total_qualifies=img_base64_total_qualifies, img_base64_last_30_days = img_base64_last_30_days, img_base64=img_base64, summary_data=summary_data)
 
 
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+
 
