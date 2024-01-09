@@ -257,6 +257,26 @@ def aggregate_not_qualified_by_month():
 
     return sorted_result
 
+def get_leads_and_customers_count():
+    entries = get_data()
+    result_dict = defaultdict(lambda: {'total_leads': 0, 'total_customers': 0})
+
+    for entry in entries:
+        assigned_to = entry['properties']['Assigned to']['people']
+        tags = entry['properties']['Tags']['multi_select']
+        contact_type = entry['properties']['Formula']['formula']['string'] if entry['properties']['Formula']['formula'] else None
+
+        if assigned_to and tags and contact_type:
+            assigned_to_id = assigned_to[0]['id']
+
+            assigned_to_name = sales_persons.get(assigned_to_id, "unknown")
+
+            if contact_type == 'LEAD':
+                result_dict[assigned_to_name]['total_leads'] += 1
+            elif contact_type == 'CUSTOMER':
+                result_dict[assigned_to_name]['total_customers'] += 1
+
+    return dict(result_dict)
 
 
 # Routes
@@ -278,6 +298,7 @@ def get_stats():
     stats_data_last_30_days = calculate_stats_last_30_days()
     qualified_by_month = aggregate_qualified_by_month()
     not_qualified_by_month = aggregate_not_qualified_by_month()
+    leads_and_customers_data  = get_leads_and_customers_count()
 
     light_blue = '#5A95DB'
     dark_blue = '#142F50'
@@ -387,6 +408,8 @@ def get_stats():
 
     # Crear resumen de cada salesperson
     summary_data = {}
+    leads_and_customers_data = get_leads_and_customers_count()
+
     for salesperson, stats in stats_data.items():
         month_goal = stats['month_goal']
         month_goal_qualifies_amount = stats['month_goal_qualifies_amount']
@@ -398,6 +421,9 @@ def get_stats():
         not_qualifies_rate = stats['not_qualifies_rate']
         cancelled_rate = stats['cancelled_rate']
 
+        # Obtener las estadísticas de LEADs y CUSTOMERs del diccionario leads_and_customers_data
+        leads_customers_stats = leads_and_customers_data.get(salesperson, {'total_leads': 0, 'total_customers': 0})
+
         summary_data[salesperson] = {
             'Month Goal': month_goal,
             'Month Goal Qualifies Amount': month_goal_qualifies_amount,
@@ -407,14 +433,12 @@ def get_stats():
             'visited': visited,
             'Conversion Rate': f"{conversion_rate:.2%}",
             'Not Qualifies Rate': f"{not_qualifies_rate:.2%}",
-            'Cancelled Rate': f"{cancelled_rate:.2%}"
+            'Cancelled Rate': f"{cancelled_rate:.2%}",
+            'Total Leads': leads_customers_stats['total_leads'],
+            'Total Customers': leads_customers_stats['total_customers']
         }
 
     return render_template('index.html', img_base64_total_qualifies=img_base64_total_qualifies, img_base64_last_30_days = img_base64_last_30_days, img_base64=img_base64, summary_data=summary_data)
 
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-
-
-

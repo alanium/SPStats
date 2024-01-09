@@ -75,6 +75,8 @@
                     <th>Total Visited</th>
                     <th>Best Month</th>
                     <th>Best Month Amount</th>
+                    <th>Total Leads</th>
+                    <th>Total Customers</th>
                 </tr>
                 {% for salesperson, summary in summary_data.items() %}
                     <tr>
@@ -88,6 +90,8 @@
                         <td>{{ summary['visited'] }}</td>
                         <td>{{ summary['Month Goal'] }}</td>
                         <td>{{ summary['Month Goal Qualifies Amount'] }}</td>
+                        <td>{{ summary['Total Leads'] }}</td>
+                        <td>{{ summary['Total Customers'] }}</td>
     
                     </tr>
                 {% endfor %}
